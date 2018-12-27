@@ -1,39 +1,43 @@
 <?php
+/*
+ * beevrr
+ * github.com/01mu
+ */
 
-namespace App\Http\Controllers\Auth;
+namespace beevrr\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use beevrr\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
     }
+
+    public function login(Request $request)
+    {
+        if(Auth::attempt(['user_name' => $request->user_name,
+            'password' => $request->password]))
+        {
+            return $this->sendLoginResponse($request);
+        }
+        else
+        {
+            return $this->sendFailedLoginResponse($request, 'auth.failed_status');
+        }
+    }
+
+    /*public function showLoginForm()
+    {
+        return view('login');
+    }*/
 }

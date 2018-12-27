@@ -1,0 +1,108 @@
+hr { width:100%; height:1px; background: #fff }
+
+body
+{
+    background-color: #fefefe;
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+.thing0, .thing1
+{
+    padding: 10px;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 1px;
+    margin-bottom: 7.5px;
+}
+
+.thing0:hover, .thing1:hover
+{
+    background-color: #f0f0f0;
+}
+
+.thing0
+{
+    background-color: #fafafa;
+}
+
+.thing1
+{
+    background-color: #fefefe;
+}
+
+.bd
+{
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.top
+{
+    overflow: hidden;
+    padding: 10px;
+    padding-top: 20px;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #99ccff;
+    border-bottom-width: 1px;
+    background-color: #66b3ff;
+}
+
+.title
+{
+    padding: 20px;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 1px;
+    border-top-style: solid;
+    border-top-color: #ccc;
+    border-top-width: 1px;
+    margin-bottom: 25px;
+    background-color: #99ccff;
+}
+
+.titletext
+{
+    font-size: 20px;
+    text-align: left;
+}
+
+.btmbdr
+{
+    border-bottom-style: solid;
+    border-bottom-color: #000000;
+    border-bottom-width: 1px;
+}
+
+.box
+{
+    background-color: #fafafa;
+    padding: 5px;
+}
+
+.header
+{
+    margin-bottom: 10px;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 1px;
+    background-color: #fafafa;
+    padding: 10px;
+}
+
+.right
+{
+    text-align: right;
+}
+
+a
+{
+    color: black;
+}
+
+a:link
+{
+    text-decoration: none;
+}

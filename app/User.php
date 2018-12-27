@@ -1,6 +1,10 @@
 <?php
+/*
+ * beevrr
+ * github.com/01mu
+ */
 
-namespace App;
+namespace beevrr;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -10,20 +14,20 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $table = 'users';
+
     protected $fillable = [
-        'name', 'email', 'password',
+        'user_name',
+        'password',
+        'score',
+        'total_responses',
+        'active_responses',
+        'total_votes',
+        'active_votes',
+        'total_discussions',
+        'active_discussions',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password', 'remember_token',
     ];
