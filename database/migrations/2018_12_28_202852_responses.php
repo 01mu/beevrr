@@ -8,24 +8,24 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class VotesResp extends Migration
+class Responses extends Migration
 {
     public function up()
     {
-        Schema::create('votes_resp', function (Blueprint $table)
+        Schema::create('responses', function (Blueprint $table)
         {
             $table->increments('id');
-            $table->integer('response');
+            $table->longText('response');
+            $table->integer('proposition');
             $table->integer('user_id');
             $table->string('user_name');
-            $table->integer('vote');
-            $table->integer('type');
+            $table->string('opinion');
             $table->integer('date');
         });
     }
 
     public function down()
     {
-        Schema::drop('votes_resp');
+        Schema::drop('responses');
     }
 }

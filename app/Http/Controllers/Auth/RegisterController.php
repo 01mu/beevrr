@@ -25,12 +25,20 @@ class RegisterController extends Controller
 
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'user_name' => ['alpha_num', 'required', 'string',
-                'max:255', 'unique:users'],
+        $rules = ['captcha' => 'required|captcha'];
+        $validator = Validator::make($data, $rules);
 
-            'password' => ['required', 'string', 'min:3', 'confirmed'],
-        ]);
+        if(!$validator->fails())
+        {
+            $validator = Validator::make($data, [
+                'user_name' => ['required', 'min:3', 'max:30', 'alpha_num',
+                    'string', 'unique:users'],
+
+                'password' => ['required', 'min:3', 'string', 'confirmed'],
+            ]);
+        }
+
+        return $validator;
     }
 
     protected function create(array $data)

@@ -9,7 +9,9 @@
     </head>
     <body>
         <div class="bd">
-            @include('partials/register')
+            <a href="{{ route('home') }}"><b>Beevrr</b></a> | notice
+            <hr>
+            {{ $notice }}
         </div>
     </body>
 </html>

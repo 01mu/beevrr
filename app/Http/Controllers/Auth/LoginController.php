@@ -8,7 +8,8 @@ namespace beevrr\Http\Controllers\Auth;
 
 use beevrr\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,16 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        $captcha = Validator::make(Input::all(), array(
+            'captcha' => 'required|captcha',));
+
+        if($captcha->fails())
+        {
+            session()->flash('notice', 'Bad CAPTCHA!');
+
+            return redirect('notice');
+        }
+
         if(Auth::attempt(['user_name' => $request->user_name,
             'password' => $request->password]))
         {
@@ -32,12 +43,8 @@ class LoginController extends Controller
         }
         else
         {
-            return $this->sendFailedLoginResponse($request, 'auth.failed_status');
+            return $this->sendFailedLoginResponse($request,
+                'auth.failed_status');
         }
     }
-
-    /*public function showLoginForm()
-    {
-        return view('login');
-    }*/
 }

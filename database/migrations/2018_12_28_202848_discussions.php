@@ -14,34 +14,56 @@ class Discussions extends Migration
     {
         Schema::create('discussions', function (Blueprint $table)
         {
+            // id of discussion
             $table->increments('id');
+
+            // discussion proposition (title)
             $table->longText('proposition');
+
+            // discussion argument (body)
             $table->longText('argument');
-            $table->integer('post_count');
+
+            // counts
+            $table->integer('reply_count');
+            $table->integer('vote_count');
+            $table->integer('pa_vote_count');
+            $table->integer('pv_vote_count');
+
+            // info
+            $table->integer('recent_action');
             $table->integer('post_date');
-            $table->string('pa_phase');
-            $table->string('a_phase');
-            $table->string('v_phase');
             $table->string('user_name');
             $table->integer('user_id');
             $table->string('current_phase');
-            $table->integer('a_phase_date');
-            $table->integer('v_phase_date');
-            $table->integer('end_date');
+
+            // end dates
+            $table->integer('pa_end_date');
+            $table->integer('a_end_date');
+            $table->integer('v_end_date');
+
+            // pre argument votes
             $table->integer('pa_for');
             $table->integer('pa_against');
             $table->integer('pa_undecided');
+
+            // post argument votes
             $table->integer('pv_for');
             $table->integer('pv_against');
-            $table->integer('vote_count_pa');
-            $table->integer('vote_count_pv');
+
+            // pre argument percent
             $table->float('pa_for_per');
             $table->float('pa_against_per');
             $table->float('pa_undecided_per');
-            $table->float('pvfor_per');
+
+            // post argument percent
+            $table->float('pv_for_per');
             $table->float('pv_against_per');
+
+            // change percent diff
             $table->float('for_change');
             $table->float('against_change');
+
+            // winner (for or against)
             $table->string('winner');
         });
     }

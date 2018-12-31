@@ -9,7 +9,9 @@
     </head>
     <body>
         <div class="bd">
-            @include('partials/register')
+            @include('partials/header-login')
+            @include('partials/user_view')
+            @include('partials/footer-stats')
         </div>
     </body>
 </html>

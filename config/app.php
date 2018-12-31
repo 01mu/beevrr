@@ -162,6 +162,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+        Mews\Captcha\CaptchaServiceProvider::class,
+
         /*
          * Package Service Providers...
          */
@@ -189,6 +191,8 @@ return [
     */
 
     'aliases' => [
+
+        'Captcha' => Mews\Captcha\Facades\Captcha::class,
 
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,

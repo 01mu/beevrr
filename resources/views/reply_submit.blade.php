@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="bd">
-            @include('partials/register')
+            @include('partials/reply_submit')
         </div>
     </body>
 </html>
