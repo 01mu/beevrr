@@ -16,8 +16,21 @@ class Activities extends Migration
         {
             $table->increments('id');
             $table->integer('user_id');
+            $table->string('user_name');
+
+            /*
+             * 0 = pre-vote for
+             * 1 = pre-vote against
+             * 2 = pre-vote undecided
+             * 3 = post-vote for
+             * 4 = post-vote against
+             * 5 = response for
+             * 6 = response against
+             * 7 = new discussion
+             */
             $table->integer('action_type');
-            $table->integer('action_link');
+            $table->integer('proposition');
+            $table->integer('is_active');
             $table->integer('date');
         });
     }

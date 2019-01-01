@@ -117,7 +117,7 @@ class Discussion extends Controller
             {
                 $resp = $resp[0]->opinion;
 
-                $action['did'] = 'you responded to the proposition: ';
+                $action['did'] = 'you responded to the discussion: ';
                 $action['res'] = $resp;
             }
         }
@@ -232,6 +232,18 @@ class Discussion extends Controller
             $pa_end_date, $a_end_date, $v_end_date,
             time()]);
 
+        $inserted = DB::select('SELECT id FROM discussions WHERE user_id = ?
+            ORDER BY post_date DESC', [Auth::user()->id])[0]->id;
+
+        DB::update(
+            'UPDATE users SET total_discussions = total_discussions + 1, ' .
+            'active_discussions = active_discussions + 1 ' .
+            'WHERE id = ?', [Auth::user()->id]);
+
+        DB::insert('INSERT INTO activities (user_id, user_name, action_type,
+            proposition, date, is_active) VALUES (?, ?, 7, ?, ?, 1)',
+            [Auth::user()->id, Auth::user()->user_name, $inserted, time()]);
+
         return Common::notice_msg('Discussion submitted!');
     }
 
@@ -239,7 +251,7 @@ class Discussion extends Controller
     {
         switch($type)
         {
-            case "1hour": $time = 60 * 60; break;
+            case "1hour": $time = 1; break;
             case "6hours": $time = 60 * 60 * 6; break;
             case "1day": $time = 60 * 60 * 24; break;
             case "3days": $time = 60 * 60 * 24 * 3; break;

@@ -26,6 +26,7 @@ class User extends Authenticatable
         'active_votes',
         'total_discussions',
         'active_discussions',
+        'bio',
     ];
 
     protected $hidden = [

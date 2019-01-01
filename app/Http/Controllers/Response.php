@@ -84,11 +84,31 @@ class Response extends Controller
                 'active_responses = active_responses + 1 ' .
                 'WHERE id = ?', [Auth::user()->id]);
 
+            DB::insert('INSERT INTO activities (user_id, user_name, action_type,
+                proposition, date, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+                [Auth::user()->id, Auth::user()->user_name,
+                $this->get_activity_type(),  $id, time()]);
+
             return Common::notice_msg('Response submitted!');
         }
         else
         {
             return Common::notice_msg('Invalid ID!');
         }
+    }
+
+    private function get_activity_type()
+    {
+        switch(Input::get('type'))
+        {
+            case 'for':
+                $tp = 5;
+                break;
+            default:
+                $tp = 6;
+                break;
+        }
+
+        return $tp;
     }
 }

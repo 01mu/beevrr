@@ -30,7 +30,7 @@
     <div class="wrapper50rm">
         @if(count($content['for']) > 0)
             @foreach($content['for'] as $post)
-                <div class="box">
+                <div class="boxb">
                     {!! nl2br($post->response) !!}
                     <div style="margin-bottom:5px;"></div>
                     <div class="small">
@@ -51,7 +51,7 @@
     <div class="wrapper50lm">
         @if(count($content['against']) > 0)
             @foreach($content['against'] as $post)
-                <div class="box">
+                <div class="boxr">
                     {!! nl2br($post->response) !!}
                     <div style="margin-bottom:5px;"></div>
                     <div class="small">
@@ -107,7 +107,7 @@
                 <br>
                 <b>winner</b>: {{ $content['discussion']->winner }}
                 <br><br>
-                replies: {{ $content['discussion']->reply_count }}
+                responses: {{ $content['discussion']->reply_count }}
                 <br>
                 votes: {{ $content['discussion']->vote_count }}
             </div>

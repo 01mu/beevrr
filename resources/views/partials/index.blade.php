@@ -18,27 +18,17 @@
                 ['id' => $content['discussions'][$i]->user_id]) }}">
                 {{ $content['discussions'][$i]->user_name }}</a>
             {{ $content['discussions'][$i]->post_date }}
-            | replies: {{ $content['discussions'][$i]->reply_count }}
+            | responses: {{ $content['discussions'][$i]->reply_count }}
             | votes: {{ $content['discussions'][$i]->vote_count }}
             | {{ $content['discussions'][$i]->current_phase }}
         </div>
     </div>
 @endfor
-<div class="flex">
-    @if($content['page'] != 1)
-    <div class="wrapper50">
-        <a href="{{ route('page', ['p' => $content['left']]) }}"><<</a>
-    </div>
-    @else
-    <div class="wrapper50">
-    </div>
-    @endif
-    <div class="wrapper50">
-        <div class="right">
-            <a href="{{ route('page', ['p' => $content['page']]) }}">>></a>
-        </div>
-    </div>
-</div>
+
+@include('partials/sub/pagination', array(
+    'left' => $content['pagination']['left'],
+    'right' =>  $content['pagination']['right'],))
+
 @guest
 
 @else

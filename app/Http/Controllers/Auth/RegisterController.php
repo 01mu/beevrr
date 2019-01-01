@@ -33,7 +33,6 @@ class RegisterController extends Controller
             $validator = Validator::make($data, [
                 'user_name' => ['required', 'min:3', 'max:30', 'alpha_num',
                     'string', 'unique:users'],
-
                 'password' => ['required', 'min:3', 'string', 'confirmed'],
             ]);
         }
@@ -53,6 +52,7 @@ class RegisterController extends Controller
             'active_votes' => 0,
             'total_discussions' => 0,
             'active_discussions' => 0,
+            'bio' => '',
         ]);
     }
 }

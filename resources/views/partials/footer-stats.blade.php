@@ -9,5 +9,7 @@
     responses: {{ $content['response_count'][0]->count }} |
     votes: {{ $content['vote_count'][0]->count }} |
     users: {{ $content['user_count'][0]->count }}
-    <hr>
+    <span style="float: right;">
+        <a href="{{ route('search-view') }}">[search]</a>
+    </span>
 </div>

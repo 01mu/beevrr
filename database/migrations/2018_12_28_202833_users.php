@@ -24,6 +24,7 @@ class Users extends Migration
             $table->integer('active_votes');
             $table->integer('total_discussions');
             $table->integer('active_discussions');
+            $table->longText('bio');
             $table->rememberToken();
             $table->timestamps();
         });

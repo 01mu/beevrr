@@ -7,103 +7,98 @@
 namespace beevrr\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Hash;
 
 use beevrr\Http\Controllers\Common;
+use beevrr\Models\DiscussionModel;
+use beevrr\User;
 
-use Validator;
-use DB;
 use Auth;
-use DateTime;
+use Validator;
 
 class Views extends Controller
 {
-    public function index($p = 0)
+    public function index($page = 0)
     {
-        if(!$p)
-        {
-            $offset = 0;
-        }
-        else
-        {
-            $offset = 10 * $p;
-        }
+        $pagination = config('global.pagination');
 
-        $disc = DB::select('SELECT * FROM discussions
-            ORDER BY recent_action DESC LIMIT 10 OFFSET ?', [$offset]);
+        $discussions = DiscussionModel::orderBy('recent_action', 'DESC')
+            ->skip(Common::get_offset($page))
+            ->take($pagination)
+            ->get();
 
-        for($i = 0; $i < count($disc); $i++)
-        {
-            $disc[$i]->post_date = Common::tm($disc[$i]->post_date);
-        }
+        Common::fix_time($discussions);
 
-        if(!count($disc))
+        if(Common::pagination_redirect($discussions, $page))
         {
             return redirect('/');
         }
 
         $content = Common::get_stats();
-        $content['discussions'] = $disc;
-        $content['page'] = $p + 1;
-        $content['left'] = $p - 1;
+        $content['discussions'] = $discussions;
+
+        $l = route('page', array( 'p' => $page - 1,));
+        $r = route('page', array( 'p' => $page + 1,));
+
+        $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
         return view('index')->with('content', $content);
     }
 
-    public function user_view($id)
-    {
-        $q = 'SELECT * FROM users WHERE id = ?';
-        $a = [$id];
-
-        if($select = DB::select($q, $a))
-        {
-            $content = Common::get_stats();
-            $content['user'] = $select;
-
-            $view = view('user_view')->with('content', $content);
-        }
-        else
-        {
-            $view = Common::notice_msg('Invalid ID!');
-        }
-
-        return $view;
-    }
-
     public function dashboard()
     {
-        if($user = Auth::user())
+        if(!$user = Auth::user())
         {
-            $q = 'SELECT * FROM users WHERE id = ?';
-            $a = [Auth::user()->id];
-
-            $content =  Common::get_stats();
-            $content['user'] = DB::select($q, $a);
-
-            $view = view('dashboard')->with('content', $content);
-        }
-        else
-        {
-            $view = redirect('login');
+            return Common::notice_msg('Not logged in!');
         }
 
-        return $view;
+        $content =  Common::get_stats();
+        $content['user'] = User::where('id', Auth::user()->id)->get();
+
+        return view('dashboard')->with('content', $content);
     }
 
-    public function notice()
+    public function search_view()
     {
-        return view('notice')->with('notice', session()->get('notice'));
+        return view('search_submit');
     }
 
-    public function login()
+    public function search_post($page = 0, Request $request)
     {
-        return view('login');
-    }
+        $validator = Validator::make($request->all(), array(
+            'q' => ['required', 'string'],));
 
-    public function register()
-    {
-        return view('register');
+        if($validator->fails())
+        {
+            return Common::notice_msg('Invalid input!');
+        }
+
+        $pagination = config('global.pagination');
+
+        $query = '%' . $request->q . '%';
+
+        $result = DiscussionModel::orderBy('recent_action', 'DESC')
+            ->skip(Common::get_offset($page))
+            ->take($pagination)
+            ->where('proposition', 'like', $query)
+            ->orWhere('proposition', 'like', $query)
+            ->get();
+
+        Common::fix_time($result);
+
+        $content = Common::get_stats();
+        $content['search'] = $result;
+
+        $l = route('search-post', array(
+                'q' => $request->q,
+                'p' => $page - 1,));
+
+        $r = route('search-post', array(
+                'q' => $request->q,
+                'p' => $page + 1,));
+
+        $content['pagination'] = Common::get_pagination_next($l, $r, $page);
+
+        return view('search_view')->with('content', $content);
     }
 
     public function change_pw(Request $request)
@@ -123,26 +118,54 @@ class Views extends Controller
         {
             return Common::notice_msg('Invalid input!');
         }
-        else
+
+        if(Hash::check($request->oldpw, Auth::user()->password))
         {
-            $curpw = Auth::user()->password;
-            $oldpw = $request->oldpw;
+            User::where('id', Auth::user()->id)
+                ->update(array('password' => Hash::make($request->newpw)));
 
-            if(Hash::check($oldpw, $curpw))
-            {
-                $update  = DB::update(
-                    'UPDATE users SET password = ? WHERE id = ?',
-                    [Hash::make($request->newpw), Auth::user()->id]);
+            Auth::logout();
 
-                Auth::logout();
-
-                return Common::notice_msg('Password changed!');
-            }
-            else
-            {
-                return Common::notice_msg('Invalid input!');
-            }
+            return Common::notice_msg('Password changed!');
         }
+
+        return Common::notice_msg('Invalid input!');
+    }
+
+    public function change_bio(Request $request)
+    {
+        if(!Auth::check())
+        {
+            return Common::notice_msg('Not logged in!');
+        }
+
+        $validator = Validator::make($request->all(), array(
+            'bio' => ['required', 'max:500'],));
+
+        if($validator->fails())
+        {
+            return Common::notice_msg('Invalid input!');
+        }
+
+        User::where('id', Auth::user()->id)
+            ->update(array('bio' => $request->bio));
+
+        return Common::notice_msg('Bio updated!');
+    }
+
+    public function notice()
+    {
+        return view('notice')->with('notice', session()->get('notice'));
+    }
+
+    public function login()
+    {
+        return view('login');
+    }
+
+    public function register()
+    {
+        return view('register');
     }
 
     public function home_redirect()

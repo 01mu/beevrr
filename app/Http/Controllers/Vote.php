@@ -101,12 +101,50 @@ class Vote extends Controller
                 'active_votes = active_votes + 1 ' .
                 'WHERE id = ?', [Auth::user()->id]);
 
+            DB::insert('INSERT INTO activities (user_id, user_name, action_type,
+                proposition, date, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+                [Auth::user()->id, Auth::user()->user_name,
+                $this->get_activity_type($phase),  $id, time()]);
+
            return Common::notice_msg('Vote submitted!');
         }
         else
         {
             return Common::notice_msg('Invalid ID!');
         }
+    }
+
+    private function get_activity_type($phase)
+    {
+        if($phase === 'pre-argument')
+        {
+            switch(Input::get('v'))
+            {
+                case 'for':
+                    $tp = 0;
+                    break;
+                case 'against':
+                    $tp = 1;
+                    break;
+                default:
+                    $tp = 2;
+                    break;
+            }
+        }
+        else
+        {
+            switch(Input::get('v'))
+            {
+                case 'for':
+                    $tp = 3;
+                    break;
+                default:
+                    $tp = 4;
+                    break;
+            }
+        }
+
+        return $tp;
     }
 
     private function update_vote_info($id, $phase)
