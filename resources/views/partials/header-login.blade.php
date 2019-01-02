@@ -23,6 +23,6 @@
     </div>
 </div>
 <hr>
-<a href="{{ route('home') }}"><h1>Beevrr</h1></a>
-<h5>Oxford style debate platform!</h5>
+<a href="{{ route('home') }}"><h1>beevrr</h1></a>
+<h5>oxford style debate platform!</h5>
 <hr>

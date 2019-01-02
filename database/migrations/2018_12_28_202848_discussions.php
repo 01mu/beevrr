@@ -24,10 +24,10 @@ class Discussions extends Migration
             $table->longText('argument');
 
             // counts
-            $table->integer('reply_count');
-            $table->integer('vote_count');
-            $table->integer('pa_vote_count');
-            $table->integer('pv_vote_count');
+            $table->integer('reply_count')->default(0);
+            $table->integer('vote_count')->default(0);
+            $table->integer('pa_vote_count')->default(0);
+            $table->integer('pv_vote_count')->default(0);
 
             // info
             $table->integer('recent_action');
@@ -37,34 +37,34 @@ class Discussions extends Migration
             $table->string('current_phase');
 
             // end dates
-            $table->integer('pa_end_date');
-            $table->integer('a_end_date');
-            $table->integer('v_end_date');
+            $table->integer('pa_end_date')->default(0);
+            $table->integer('a_end_date')->default(0);
+            $table->integer('v_end_date')->default(0);
 
             // pre argument votes
-            $table->integer('pa_for');
-            $table->integer('pa_against');
-            $table->integer('pa_undecided');
+            $table->integer('pa_for')->default(0);
+            $table->integer('pa_against')->default(0);
+            $table->integer('pa_undecided')->default(0);
 
             // post argument votes
-            $table->integer('pv_for');
-            $table->integer('pv_against');
+            $table->integer('pv_for')->default(0);
+            $table->integer('pv_against')->default(0);
 
             // pre argument percent
-            $table->float('pa_for_per');
-            $table->float('pa_against_per');
-            $table->float('pa_undecided_per');
+            $table->float('pa_for_per')->default(0);
+            $table->float('pa_against_per')->default(0);
+            $table->float('pa_undecided_per')->default(0);
 
             // post argument percent
-            $table->float('pv_for_per');
-            $table->float('pv_against_per');
+            $table->float('pv_for_per')->default(0);
+            $table->float('pv_against_per')->default(0);
 
             // change percent diff
-            $table->float('for_change');
-            $table->float('against_change');
+            $table->float('for_change')->default(0);
+            $table->float('against_change')->default(0);
 
             // winner (for or against)
-            $table->string('winner');
+            $table->string('winner')->default('not finished');
         });
     }
 

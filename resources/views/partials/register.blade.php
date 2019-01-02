@@ -3,7 +3,7 @@
     github.com/01mu
 -->
 
-<a href="{{ route('home') }}"><b>Beevrr</b></a> | register
+<a href="{{ route('home') }}"><b>beevrr</b></a> | register
 <hr>
 @guest
     <div class="box">

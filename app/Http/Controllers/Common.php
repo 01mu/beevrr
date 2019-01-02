@@ -57,11 +57,21 @@ class Common extends Controller
         return $offset;
     }
 
-    public static function fix_time($db)
+    public static function fix_time($db, $t = 0)
     {
-        for($i = 0; $i < count($db); $i++)
+        if(!$t)
         {
-            $db[$i]->post_date = Common::tm($db[$i]->post_date);
+            for($i = 0; $i < count($db); $i++)
+            {
+                $db[$i]->post_date = Common::tm($db[$i]->post_date);
+            }
+        }
+        else
+        {
+            for($i = 0; $i < count($db); $i++)
+            {
+                $db[$i]->date = Common::tm($db[$i]->date);
+            }
         }
     }
 
@@ -140,7 +150,7 @@ class Common extends Controller
 
     public static function same_as_poster($disc_id, $user_id)
     {
-        return count(DiscussionModel::select('*')
+        return count(DiscussionModel::select('id')
             ->where('id', $disc_id)
             ->where('user_id', $user_id)
             ->get());
@@ -174,7 +184,7 @@ class Common extends Controller
     {
         $exists = 0;
 
-        if(count(DiscussionModel::select('id')->where('id', $id)))
+        if(count(DiscussionModel::select('id')->where('id', $disc_id)->get()))
         {
             $exists = 1;
         }

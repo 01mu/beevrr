@@ -52,7 +52,7 @@ class User extends Controller
         {
             case 'tot_res':
                 $title = 'total responses';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->whereBetween('action_type', [5, 6])
                     ->orderBy('date', 'DESC')
                     ->skip($offset)
@@ -61,7 +61,7 @@ class User extends Controller
                 break;
             case 'act_res':
                 $title = 'active responses';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->whereBetween('action_type', [5, 6])
                     ->where('is_active', 1)
                     ->orderBy('date', 'DESC')
@@ -71,7 +71,7 @@ class User extends Controller
                 break;
             case 'tot_vot':
                 $title = 'total votes';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->whereBetween('action_type', [0, 4])
                     ->orderBy('date', 'DESC')
                     ->skip($offset)
@@ -80,7 +80,7 @@ class User extends Controller
                 break;
             case 'act_vot':
                 $title = 'active votes';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->whereBetween('action_type', [0, 4])
                     ->where('is_active', 1)
                     ->orderBy('date', 'DESC')
@@ -90,7 +90,7 @@ class User extends Controller
                 break;
             case 'tot_dis':
                 $title = 'total discussions';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->where('action_type', 7)
                     ->orderBy('date', 'DESC')
                     ->skip($offset)
@@ -99,7 +99,7 @@ class User extends Controller
                 break;
             case 'act_dis':
                 $title = 'active discussions';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->where('action_type', 7)
                     ->where('is_active', 1)
                     ->orderBy('date', 'DESC')
@@ -109,7 +109,7 @@ class User extends Controller
                 break;
             default:
                 $title = 'full activity';
-                $get = Activity::where('user_id', $user_id)
+                $get = ActivityModel::where('user_id', $user_id)
                     ->orderBy('date', 'DESC')
                     ->skip($offset)
                     ->take($pagination)
@@ -199,9 +199,7 @@ class User extends Controller
         {
             return $select;
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 }

@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="bd">
-            <a href="{{ route('home') }}"><b>Beevrr</b></a> | notice
+            <a href="{{ route('home') }}"><b>beevrr</b></a> | notice
             <hr>
             {{ $notice }}
         </div>

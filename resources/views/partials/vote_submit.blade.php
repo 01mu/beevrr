@@ -1,5 +1,5 @@
 <!--
-    beevr
+    beevrr
     github.com/01mu
 -->
 
@@ -7,7 +7,7 @@
 @guest
 
 @else
-    <a href="{{ route('home') }}"><b>Beevrr</b></a> | submit
+    <a href="{{ route('home') }}"><b>beevrr</b></a> | submit
 
     @if($content['phase'] === 'pre-argument')
         pre-argument vote

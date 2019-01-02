@@ -8,98 +8,101 @@ namespace beevrr\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Hash;
 
 use beevrr\Http\Controllers\Common;
+use beevrr\Models\ResponseModel;
+use beevrr\Models\DiscussionModel;
+use beevrr\Models\ActivityModel;
+use beevrr\User;
 
 use Validator;
-use DB;
 use Auth;
-use DateTime;
 
 class Response extends Controller
 {
-    public function resp_view($id)
+    public function resp_view($disc_id)
     {
-        if(Common::check_exists($id))
-        {
-            if(!Common::check_can_reply($id))
-            {
-                $view = Common::notice_msg('Cannot post!');
-            }
-            else
-            {
-               $view = view('reply_submit')->with('id', $id);
-            }
-        }
-        else
-        {
-            $view = Common::notice_msg('Invalid ID!');
-        }
-
-        return $view;
-    }
-
-    public function resp_post($id)
-    {
-        if(Common::check_exists($id))
-        {
-            if(!Common::check_can_reply($id))
-            {
-                return Common::notice_msg('Cannot respond!');
-            }
-
-            $captcha = Validator::make(Input::all(), array(
-                'captcha' => 'required|captcha',));
-
-            if($captcha->fails())
-            {
-                return Common::notice_msg('Bad CAPTCHA!');
-            }
-
-            $validator = Validator::make(Input::all(), array(
-                'resp' => ['required', 'min:10', 'max:40000', 'string'],
-                'type' => ['required', 'in:for,against'],));
-
-            if($validator->fails())
-            {
-                return Common::notice_msg('Invalid input!');
-            }
-
-            DB::insert(
-                'INSERT INTO responses (response, proposition, user_id, ' .
-                'user_name, opinion, date) ' .
-                'VALUES (?, ?, ?,' .
-                '?, ?, ?)',
-                [strip_tags(Input::get('resp')), $id, Auth::user()->id,
-                Auth::user()->user_name, Input::get('type'), time()]);
-
-            DB::update(
-                'UPDATE discussions SET reply_count = reply_count + 1,
-                recent_action = ?
-                WHERE id = ?', [time(), $id]);
-
-            DB::update(
-                'UPDATE users SET total_responses = total_responses + 1, ' .
-                'active_responses = active_responses + 1 ' .
-                'WHERE id = ?', [Auth::user()->id]);
-
-            DB::insert('INSERT INTO activities (user_id, user_name, action_type,
-                proposition, date, is_active) VALUES (?, ?, ?, ?, ?, 1)',
-                [Auth::user()->id, Auth::user()->user_name,
-                $this->get_activity_type(),  $id, time()]);
-
-            return Common::notice_msg('Response submitted!');
-        }
-        else
+        if(!Common::check_exists($disc_id))
         {
             return Common::notice_msg('Invalid ID!');
         }
+
+        if(!Common::check_can_reply($disc_id))
+        {
+            return Common::notice_msg('Cannot respond!');
+        }
+
+        return view('reply_submit')->with('id', $disc_id);
     }
 
-    private function get_activity_type()
+    public function resp_post($disc_id, Request $request)
     {
-        switch(Input::get('type'))
+        if(!Common::check_exists($disc_id))
+        {
+            return Common::notice_msg('Invalid ID!');
+        }
+
+        if(!Common::check_can_reply($disc_id))
+        {
+            return Common::notice_msg('Cannot respond!');
+        }
+
+        $captcha = Validator::make(Input::all(), array(
+            'captcha' => 'required|captcha',));
+
+        if($captcha->fails())
+        {
+            return Common::notice_msg('Bad CAPTCHA!');
+        }
+
+        $validator = Validator::make(Input::all(), array(
+            'resp' => ['required', 'min:10', 'max:40000', 'string'],
+            'type' => ['required', 'in:for,against'],));
+
+        if($validator->fails())
+        {
+            return Common::notice_msg('Invalid input!');
+        }
+
+        $time = time();
+        $type = $request->type;
+
+        $user_id = Auth::user()->id;
+        $user_name = Auth::user()->user_name;
+
+        $discussion_insert = new ResponseModel;
+        $discussion_insert->response = strip_tags($request->resp);
+        $discussion_insert->proposition = $disc_id;
+        $discussion_insert->user_id = $user_id;
+        $discussion_insert->user_name = $user_name;
+        $discussion_insert->opinion = $type;
+        $discussion_insert->date = $time;
+        $discussion_insert->save();
+
+        $activity_insert = new ActivityModel;
+        $activity_insert->user_id = $user_id;
+        $activity_insert->user_name = $user_name;
+        $activity_insert->action_type = $this->get_activity_type($type);
+        $activity_insert->proposition = $disc_id;
+        $activity_insert->date = $time;
+        $activity_insert->save();
+
+        $discussion_update = DiscussionModel::find($disc_id);
+        $discussion_update->reply_count += 1;
+        $discussion_update->recent_action = $time;
+        $discussion_update->save();
+
+        $user_update = User::find($user_id);
+        $user_update->total_responses += 1;
+        $user_update->active_responses += 1;
+        $user_update->save();
+
+        return Common::notice_msg('Response submitted!');
+    }
+
+    private function get_activity_type($type)
+    {
+        switch($type)
         {
             case 'for':
                 $tp = 5;

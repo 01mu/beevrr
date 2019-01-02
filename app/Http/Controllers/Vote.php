@@ -11,107 +11,107 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
 
 use beevrr\Http\Controllers\Common;
+use beevrr\Models\VoteModel;
+use beevrr\Models\DiscussionModel;
+use beevrr\Models\ActivityModel;
+use beevrr\User;
 
 use Validator;
-use DB;
 use Auth;
-use DateTime;
 
 class Vote extends Controller
 {
-    public function vote_view($phase, $id)
+    public function vote_view($phase, $disc_id)
     {
-        if(Common::check_exists($id))
-        {
-            $right_phase = $this->right_phase($id, $phase);
-            $can_vote = Common::check_can_vote($id, $phase);
-
-            if(!$right_phase || !$can_vote)
-            {
-                $view = Common::notice_msg('Cannot vote!');
-            }
-            else
-            {
-                $content = array();
-
-                $content['phase'] = $phase;
-                $content['id'] = $id;
-
-                $view = view('vote_submit')->with('content', $content);
-            }
-        }
-        else
-        {
-            $view = Common::notice_msg('Invalid ID!');
-        }
-
-        return $view;
-    }
-
-    public function vote_post($phase, $id)
-    {
-        if(Common::check_exists($id))
-        {
-            if(!Common::check_can_vote($id, $phase))
-            {
-                return Common::notice_msg('Cannot vote!');
-            }
-
-            $captcha = Validator::make(Input::all(), array(
-                'captcha' => 'required|captcha',));
-
-            if($captcha->fails())
-            {
-                return Common::notice_msg('Bad CAPTCHA!');
-            }
-
-            if($phase === 'pre-argument')
-            {
-                $validator = Validator::make(Input::all(), array(
-                    'v' => ['required', 'in:for,against,undecided'],));
-            }
-            else
-            {
-                $validator = Validator::make(Input::all(), array(
-                    'v' => ['required', 'in:for,against'],));
-            }
-
-            if($validator->fails())
-            {
-                return Common::notice_msg('Invalid input!');
-            }
-
-            DB::update(
-                'UPDATE discussions SET vote_count = vote_count + 1,
-                recent_action = ?
-                WHERE id = ?', [time(), $id]);
-
-            $this->update_vote_info($id, $phase);
-
-            DB::insert(
-                'INSERT INTO votes (proposition, user_id, user_name, ' .
-                'opinion, date, phase) ' .
-                'VALUES (?, ?, ?,' .
-                '?, ?, ?)',
-                [$id, Auth::user()->id, Auth::user()->user_name,
-                Input::get('v'), time(), $phase]);
-
-            DB::update(
-                'UPDATE users SET total_votes = total_votes + 1, ' .
-                'active_votes = active_votes + 1 ' .
-                'WHERE id = ?', [Auth::user()->id]);
-
-            DB::insert('INSERT INTO activities (user_id, user_name, action_type,
-                proposition, date, is_active) VALUES (?, ?, ?, ?, ?, 1)',
-                [Auth::user()->id, Auth::user()->user_name,
-                $this->get_activity_type($phase),  $id, time()]);
-
-           return Common::notice_msg('Vote submitted!');
-        }
-        else
+        if(!Common::check_exists($disc_id))
         {
             return Common::notice_msg('Invalid ID!');
         }
+
+        if(!Common::check_can_vote($disc_id, $phase))
+        {
+            return Common::notice_msg('Cannot vote!');
+        }
+
+        $content = array();
+
+        $content['phase'] = $phase;
+        $content['id'] = $disc_id;
+
+        return view('vote_submit')->with('content', $content);
+    }
+
+    public function vote_post($phase, $disc_id, Request $request)
+    {
+        if(!Common::check_exists($disc_id))
+        {
+            return Common::notice_msg('Invalid ID!');
+        }
+
+        if(!Common::check_can_vote($disc_id, $phase))
+        {
+            return Common::notice_msg('Cannot vote!');
+        }
+
+        $captcha = Validator::make(Input::all(), array(
+            'captcha' => 'required|captcha',));
+
+        if($captcha->fails())
+        {
+            return Common::notice_msg('Bad CAPTCHA!');
+        }
+
+        if($phase === 'pre-argument')
+        {
+            $validator = Validator::make(Input::all(), array(
+                'v' => ['required', 'in:for,against,undecided'],));
+        }
+        else
+        {
+            $validator = Validator::make(Input::all(), array(
+                'v' => ['required', 'in:for,against'],));
+        }
+
+        if($validator->fails())
+        {
+            return Common::notice_msg('Invalid input!');
+        }
+
+        $time = time();
+
+        $user_id = Auth::user()->id;
+        $user_name = Auth::user()->user_name;
+
+        $discussion_update = DiscussionModel::find($disc_id);
+        $discussion_update->vote_count += 1;
+        $discussion_update->recent_action = $time;
+        $discussion_update->save();
+
+        $this->update_vote_info($disc_id, $phase);
+
+        $vote_insert = new VoteModel;
+        $vote_insert->opinion = $request->v;
+        $vote_insert->proposition = $disc_id;
+        $vote_insert->user_id = $user_id;
+        $vote_insert->user_name = $user_name;
+        $vote_insert->phase = $phase;
+        $vote_insert->date = $time;
+        $vote_insert->save();
+
+        $activity_insert = new ActivityModel;
+        $activity_insert->user_id = $user_id;
+        $activity_insert->user_name = $user_name;
+        $activity_insert->action_type = $this->get_activity_type($phase);
+        $activity_insert->proposition = $disc_id;
+        $activity_insert->date = $time;
+        $activity_insert->save();
+
+        $user_update = User::find($user_id);
+        $user_update->total_votes += 1;
+        $user_update->active_votes += 1;
+        $user_update->save();
+
+        return Common::notice_msg('Vote submitted!');
     }
 
     private function get_activity_type($phase)
@@ -147,159 +147,138 @@ class Vote extends Controller
         return $tp;
     }
 
-    private function update_vote_info($id, $phase)
+    private function update_vote_info($disc_id, $phase)
     {
         if($phase === 'pre-argument')
         {
-            DB::update(
-                'UPDATE discussions SET pa_vote_count = pa_vote_count + 1
-                WHERE id = ?', [$id]);
+            $discussion_update = DiscussionModel::find($disc_id);
+            $discussion_update->pa_vote_count += 1;
 
             switch(Input::get('v'))
             {
                 case 'for':
-                    DB::update(
-                        'UPDATE discussions
-                        SET pa_for = pa_for + 1
-                        WHERE id = ?', [$id]);
+                    $discussion_update->pa_for += 1;
                     break;
                 case 'against':
-                    DB::update(
-                        'UPDATE discussions
-                        SET pa_against = pa_against + 1
-                        WHERE id = ?', [$id]);
+                    $discussion_update->pa_against += 1;
                     break;
                 default:
-                    DB::update(
-                        'UPDATE discussions
-                        SET pa_undecided = pa_undecided + 1
-                        WHERE id = ?', [$id]);
+                    $discussion_update->pa_undecided += 1;
                     break;
             }
 
-            $vote_count = DB::select('SELECT pa_vote_count FROM discussions
-                WHERE id = ?', [$id])[0]->pa_vote_count;
+            $discussion_update->save();
 
-            $for_count = DB::select('SELECT pa_for
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pa_for;
+            $vote_count = DiscussionModel::select('pa_vote_count')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pa_vote_count;
 
-            $aga_count = DB::select('SELECT pa_against
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pa_against;
+            $for_count = DiscussionModel::select('pa_for')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pa_for;
 
-            $und_count = DB::select('SELECT pa_undecided
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pa_undecided;
+            $aga_count = DiscussionModel::select('pa_against')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pa_against;
+
+            $und_count = DiscussionModel::select('pa_undecided')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pa_undecided;
 
             $for_per = $for_count / $vote_count * 100;
             $aga_per = $aga_count / $vote_count * 100;
             $und_per = $und_count / $vote_count * 100;
 
-            DB::update(
-                'UPDATE discussions SET pa_for_per = ?
-                WHERE id = ?', [$for_per, $id]);
+            $discussion_update->pa_for_per = $for_per;
+            $discussion_update->pa_against_per = $aga_per;
+            $discussion_update->pa_undecided_per = $und_per;
 
-            DB::update(
-                'UPDATE discussions SET pa_against_per = ?
-                WHERE id = ?', [$aga_per, $id]);
-
-            DB::update(
-                'UPDATE discussions SET pa_undecided_per = ?
-                WHERE id = ?', [$und_per, $id]);
+            $discussion_update->save();
         }
         else
         {
-            DB::update(
-                'UPDATE discussions SET pv_vote_count = pv_vote_count + 1
-                WHERE id = ?', [$id]);
+            $discussion_update = DiscussionModel::find($disc_id);
+            $discussion_update->pv_vote_count += 1;
 
             switch(Input::get('v'))
             {
                 case 'for':
-                    DB::update(
-                        'UPDATE discussions
-                        SET pv_for = pv_for + 1
-                        WHERE id = ?', [$id]);
+                    $discussion_update->pv_for += 1;
                     break;
                 default:
-                    DB::update(
-                        'UPDATE discussions
-                        SET pv_against = pv_against + 1
-                        WHERE id = ?', [$id]);
+                    $discussion_update->pv_for += 1;
                     break;
             }
 
-            $vote_count = DB::select('SELECT pv_vote_count FROM discussions
-                WHERE id = ?', [$id])[0]->pv_vote_count;
+            $discussion_update->save();
 
-            $for_count = DB::select('SELECT pv_for
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pv_for;
+            $vote_count = DiscussionModel::select('pv_vote_count')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pv_vote_count;
 
-            $aga_count = DB::select('SELECT pv_against
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pv_against;
+            $for_count = DiscussionModel::select('pv_for')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pv_for;
+
+            $aga_count = DiscussionModel::select('pv_against')
+                ->where('id', $disc_id)
+                ->get()
+                ->first()
+                ->pv_against;
 
             $for_per = $for_count / $vote_count * 100;
             $aga_per = $aga_count / $vote_count * 100;
 
-            DB::update(
-                'UPDATE discussions SET pv_for_per = ?
-                WHERE id = ?', [$for_per, $id]);
+            $discussion_update->pv_for_per = $for_per;
+            $discussion_update->pv_against_per = $aga_per;
 
-            DB::update(
-                'UPDATE discussions SET pv_against_per = ?
-                WHERE id = ?', [$aga_per, $id]);
+            $discussion_update->save();
 
-            $pa_for_per = DB::select('SELECT pa_for_per
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pa_for_per;
-
-            $pa_against_per = DB::select('SELECT pa_against_per
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pa_against_per;
-
-            $pv_for_per = DB::select('SELECT pv_for_per
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pv_for_per;
-
-            $pv_against_per = DB::select('SELECT pv_against_per
-                FROM discussions
-                WHERE id = ?', [$id])[0]->pv_against_per;
-
-            $for_change = $pv_for_per - $pa_for_per;
-            $against_change = $pv_against_per - $pa_against_per;
-
-            DB::update(
-                'UPDATE discussions SET for_change = ?
-                WHERE id = ?', [$for_change, $id]);
-
-            DB::update(
-                'UPDATE discussions SET against_change = ?
-                WHERE id = ?', [$against_change, $id]);
+            $this->update_changes($discussion_update, $disc_id);
         }
     }
 
-    private function right_phase($disc_id, $arg_phase)
+    private function update_changes($discussion_update, $disc_id)
     {
-        if($arg_phase !== 'pre-argument' && $arg_phase !== 'post-argument')
-        {
-            return 0;
-        }
-        else
-        {
-            $current_phase = DB::select('SELECT * FROM discussions
-                WHERE id = ?', [$disc_id])[0]->current_phase;
+        $pa_for_per = DiscussionModel::select('pa_for_per')
+            ->where('id', $disc_id)
+            ->get()
+            ->first()
+            ->pa_for_per;
 
-            if($current_phase === $arg_phase)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
-        }
+        $pa_against_per = DiscussionModel::select('pa_against_per')
+            ->where('id', $disc_id)
+            ->get()
+            ->first()
+            ->pa_against_per;
+
+        $pv_for_per = DiscussionModel::select('pv_for_per')
+            ->where('id', $disc_id)
+            ->get()
+            ->first()
+            ->pv_for_per;
+
+        $pv_against_per = DiscussionModel::select('pv_against_per')
+            ->where('id', $disc_id)
+            ->get()
+            ->first()
+            ->pv_against_per;
+
+        $discussion_update->for_change = $pv_for_per - $pa_for_per;
+        $discussion_update->against_change = $pv_against_per - $pa_against_per;
+
+        $discussion_update->save();
     }
 }

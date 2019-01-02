@@ -5,10 +5,10 @@
 
 <div class="small">
     <hr>
-    discussions: {{ $content['discussion_count'][0]->count }} |
-    responses: {{ $content['response_count'][0]->count }} |
-    votes: {{ $content['vote_count'][0]->count }} |
-    users: {{ $content['user_count'][0]->count }}
+    {{ $content['discussion_count'][0]->count }} discussions |
+    {{ $content['response_count'][0]->count }} reponses |
+    {{ $content['vote_count'][0]->count }} votes |
+    {{ $content['user_count'][0]->count }} users
     <span style="float: right;">
         <a href="{{ route('search-view') }}">[search]</a>
     </span>

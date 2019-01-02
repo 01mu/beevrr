@@ -30,8 +30,8 @@ class Activities extends Migration
              */
             $table->integer('action_type');
             $table->integer('proposition');
-            $table->integer('is_active');
-            $table->integer('date');
+            $table->integer('is_active')->default(1);
+            $table->integer('date')->default(time());
         });
     }
 

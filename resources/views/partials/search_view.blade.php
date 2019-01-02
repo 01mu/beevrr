@@ -1,3 +1,9 @@
+<!--
+    beevrr
+    github.com/01mu
+-->
+
+
 <b>search results</b>
 <hr>
 @if(count($content['search']) > 0)

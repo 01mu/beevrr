@@ -14,6 +14,7 @@ use beevrr\User;
 
 use Auth;
 use Validator;
+use Hash;
 
 class Views extends Controller
 {
@@ -121,8 +122,10 @@ class Views extends Controller
 
         if(Hash::check($request->oldpw, Auth::user()->password))
         {
-            User::where('id', Auth::user()->id)
-                ->update(array('password' => Hash::make($request->newpw)));
+            $user_update = User::find(Auth::user()->id);
+
+            $user_update->password = Hash::make($request->newpw);
+            $user_update->save();
 
             Auth::logout();
 
@@ -147,8 +150,10 @@ class Views extends Controller
             return Common::notice_msg('Invalid input!');
         }
 
-        User::where('id', Auth::user()->id)
-            ->update(array('bio' => $request->bio));
+        $user_update = User::find(Auth::user()->id);
+
+        $user_update->bio = $request->bio;
+        $user_update->save();
 
         return Common::notice_msg('Bio updated!');
     }

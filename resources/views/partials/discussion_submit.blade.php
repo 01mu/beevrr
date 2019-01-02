@@ -1,9 +1,9 @@
 <!--
-    beevr
+    beevrr
     github.com/01mu
 -->
 
-<a href="{{ route('home') }}"><b>Beevrr</b></a> | submit discussion
+<a href="{{ route('home') }}"><b>beevrr</b></a> | submit discussion
 <hr>
 @guest
 
