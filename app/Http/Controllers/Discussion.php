@@ -21,6 +21,12 @@ use Auth;
 
 class Discussion extends Controller
 {
+    /* prepare discussion for view
+     *
+     * args:    $disc_id = id of discussion
+     * returns: if invalid discussion: notice redirect
+     *          if valid: view with discussion info
+     */
     public function disc_view($disc_id)
     {
         if(count($select = $this->check_valid_disc($disc_id)) === 0)
@@ -63,6 +69,12 @@ class Discussion extends Controller
         return view('discussion_view')->with('content', $content);
     }
 
+    /* check if user is logged in and dispay discussion submision form
+     *
+     * args:    none
+     * returns: if logged in: user discussion form redirect
+     *          if not: notice redirect
+     */
     public function disc_sub_view()
     {
         if(!Auth::check())
@@ -73,6 +85,11 @@ class Discussion extends Controller
         return view('discussion_submit');
     }
 
+    /* post discussion based on form input
+     *
+     * args:    $request = post request
+     * returns: notice redirect
+     */
     public function disc_sub_post(Request $request)
     {
         if(!Auth::check())
@@ -122,13 +139,8 @@ class Discussion extends Controller
         $discussion_insert->current_phase = 'pre-argument';
         $discussion_insert->save();
 
-        $activity_insert = new ActivityModel;
-        $activity_insert->user_id = $user_id;
-        $activity_insert->user_name = $user_name;
-        $activity_insert->action_type = 7;
-        $activity_insert->proposition = $discussion_insert->id;
-        $activity_insert->date = $time;
-        $activity_insert->save();
+        $prop = $discussion_insert->id;
+        Common::activity($user_id, $user_name, 7, $prop, $time);
 
         $user_update = User::find($user_id);
         $user_update->total_discussions += 1;
@@ -138,6 +150,11 @@ class Discussion extends Controller
         return Common::notice_msg('Discussion submitted!');
     }
 
+    /* check whether the user as performed any action relating to a discussion
+     *
+     * args:    $disc_id = id of discussion
+     * returns: array containing action and description or an empty array
+     */
     private function get_user_action($disc_id)
     {
         $action = array();
@@ -190,6 +207,11 @@ class Discussion extends Controller
         return $action;
     }
 
+    /* get changing message for discussion based on phase
+     *
+     * args:    $discussion = discussion array
+     * returns: message to be displayed
+     */
     private function get_changing_message($discussion)
     {
         $message = 'finished';
@@ -232,17 +254,22 @@ class Discussion extends Controller
         return $message;
     }
 
+    /* convert time post value to seconds
+     *
+     * args:    $type = type taken from discussion post form
+     * returns: unix time conversion
+     */
     private function to_unix($type)
     {
         switch($type)
         {
             case '1hour':
-                $time = 1;
+                $time = config('global.an_hour'); /* for debugging */
                 break;
             case '6hours':
                 $time = 60 * 60 * 6;
                 break;
-            case '':
+            case '1day':
                 $time = 60 * 60 * 24;
                 break;
             default:
@@ -253,6 +280,12 @@ class Discussion extends Controller
         return $time;
     }
 
+    /* check if the discussion is valid
+     *
+     * args:    $disc_id = id of discussion
+     * returns: if not valid: 0
+     *          if valid: discussion array
+     */
     private function check_valid_disc($disc_id)
     {
         if($select = DiscussionModel::select('*')->where('id', $disc_id)->get())
@@ -263,6 +296,11 @@ class Discussion extends Controller
         return 0;
     }
 
+    /* prepare for or against change for display
+     *
+     * args:    $discussion = discussion array
+     * returns: none
+     */
     private function add_change_symbol($discussion)
     {
         if($discussion->for_change > 0)

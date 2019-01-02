@@ -18,6 +18,11 @@ use Hash;
 
 class Views extends Controller
 {
+    /* show index page with discussions
+     *
+     * args:    $page = pagination
+     * returns: view with discussions
+     */
     public function index($page = 0)
     {
         $pagination = config('global.pagination');
@@ -45,6 +50,12 @@ class Views extends Controller
         return view('index')->with('content', $content);
     }
 
+    /* show user dashboard
+     *
+     * args:    none
+     * returns: if not logged in: notice redirect
+     *          else: dashboard view with info
+     */
     public function dashboard()
     {
         if(!$user = Auth::user())
@@ -63,6 +74,13 @@ class Views extends Controller
         return view('search_submit');
     }
 
+    /* show search results
+     *
+     * args:    $page = pagination
+     *          $requst = post form data
+     * results: if error: notice redirect
+     *          else: page with search results
+     */
     public function search_post($page = 0, Request $request)
     {
         $validator = Validator::make($request->all(), array(
@@ -102,6 +120,11 @@ class Views extends Controller
         return view('search_view')->with('content', $content);
     }
 
+    /* change user password
+     *
+     * args:    $request = post form data
+     * returns: notice redirect
+     */
     public function change_pw(Request $request)
     {
         if(!Auth::check())
@@ -135,6 +158,11 @@ class Views extends Controller
         return Common::notice_msg('Invalid input!');
     }
 
+    /* change user bio
+     *
+     * args:    $request = post form data
+     * returns: notice redirect
+     */
     public function change_bio(Request $request)
     {
         if(!Auth::check())
@@ -158,21 +186,41 @@ class Views extends Controller
         return Common::notice_msg('Bio updated!');
     }
 
+    /* return notice page with session flash message
+     *
+     * args:    none
+     * returns: notice view
+     */
     public function notice()
     {
         return view('notice')->with('notice', session()->get('notice'));
     }
 
+    /* return login page
+     *
+     * args:    none
+     * returns: login view
+     */
     public function login()
     {
         return view('login');
     }
 
+    /* return register page
+     *
+     * args:    none
+     * returns: register view
+     */
     public function register()
     {
         return view('register');
     }
 
+    /* redirect to home
+     *
+     * args:    none
+     * returns: home redirect
+     */
     public function home_redirect()
     {
         return redirect('/');

@@ -43,7 +43,7 @@
                 <div style="margin-bottom:10px;"></div>
             @endforeach
         @else
-            <div class="box">
+            <div class="boxb">
                 none
             </div>
         @endif
@@ -64,7 +64,7 @@
                 <div style="margin-bottom:10px;"></div>
             @endforeach
         @else
-            <div class="box">
+            <div class="boxr">
                 none
             </div>
         @endif
@@ -100,10 +100,12 @@
             <div class="wrapper50">
                 {{ $content['next_phase'] }}
                 <br><br>
-                <b>for</b> change: {{ $content['discussion']->for_change }}%
+                <b>for</b> change: {{ $content['discussion']->for_change }}
+                percentage points
                 <br>
                 <b>against</b>
-                    change: {{ $content['discussion']->against_change }}%
+                    change: {{ $content['discussion']->against_change }}
+                    percentage points
                 <br>
                 <b>winner</b>: {{ $content['discussion']->winner }}
                 <br><br>

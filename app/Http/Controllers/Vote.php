@@ -21,6 +21,13 @@ use Auth;
 
 class Vote extends Controller
 {
+    /* dispay vote submision form
+     *
+     * args:    $phase = discussion's current phase
+     *          $disc_id = id of discussion to vote on
+     * returns: if error: notice redirect
+     *          else: vote submission form
+     */
     public function vote_view($phase, $disc_id)
     {
         if(!Common::check_exists($disc_id))
@@ -41,6 +48,13 @@ class Vote extends Controller
         return view('vote_submit')->with('content', $content);
     }
 
+    /* post vote based on form input
+     *
+     * args:    $phase = discussion's current phase
+     *          $disc_id = id of discussion to respond to
+     *          $request = post request
+     * returns: notice redirect
+     */
     public function vote_post($phase, $disc_id, Request $request)
     {
         if(!Common::check_exists($disc_id))
@@ -98,13 +112,8 @@ class Vote extends Controller
         $vote_insert->date = $time;
         $vote_insert->save();
 
-        $activity_insert = new ActivityModel;
-        $activity_insert->user_id = $user_id;
-        $activity_insert->user_name = $user_name;
-        $activity_insert->action_type = $this->get_activity_type($phase);
-        $activity_insert->proposition = $disc_id;
-        $activity_insert->date = $time;
-        $activity_insert->save();
+        $act_type = $this->get_activity_type($phase);
+        Common::activity($user_id, $user_name, $act_type, $disc_id, $time);
 
         $user_update = User::find($user_id);
         $user_update->total_votes += 1;
@@ -114,6 +123,11 @@ class Vote extends Controller
         return Common::notice_msg('Vote submitted!');
     }
 
+    /* get type for activity insert based on vote post
+     *
+     * args:    $phase = discussion's current phase
+     * returns: numeric type
+     */
     private function get_activity_type($phase)
     {
         if($phase === 'pre-argument')
@@ -147,6 +161,12 @@ class Vote extends Controller
         return $tp;
     }
 
+    /* update vote information for a given discussion
+     *
+     * args:    $disc_id = id of discussion
+     *          $phase = discussion's current phase
+     * returns: none
+     */
     private function update_vote_info($disc_id, $phase)
     {
         if($phase === 'pre-argument')
@@ -238,6 +258,14 @@ class Vote extends Controller
         }
     }
 
+    /* update opinion percentage point change for discussion
+     *
+     * args:    $discussion_update = model for last post-vote update
+     *          $disc_id = id of discussion
+     *          $pvfv = post-voting for percentage
+     *          $pvag = post-voting against percentage
+     * returns: none
+     */
     private function update_changes($discussion_update, $disc_id, $pvfp, $pvap)
     {
         $pa_for_per = DiscussionModel::select('pa_for_per')

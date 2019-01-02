@@ -20,6 +20,12 @@ use Auth;
 
 class Response extends Controller
 {
+    /* dispay response submision form
+     *
+     * args:    $disc_id = id of discussion to respond to
+     * returns: if error: notice redirect
+     *          else: reply submission form
+     */
     public function resp_view($disc_id)
     {
         if(!Common::check_exists($disc_id))
@@ -35,6 +41,12 @@ class Response extends Controller
         return view('reply_submit')->with('id', $disc_id);
     }
 
+    /* post response based on form input
+     *
+     * args:    $disc_id = id of discussion to respond to
+     *          $request = post request
+     * returns: notice redirect
+     */
     public function resp_post($disc_id, Request $request)
     {
         if(!Common::check_exists($disc_id))
@@ -79,13 +91,8 @@ class Response extends Controller
         $discussion_insert->date = $time;
         $discussion_insert->save();
 
-        $activity_insert = new ActivityModel;
-        $activity_insert->user_id = $user_id;
-        $activity_insert->user_name = $user_name;
-        $activity_insert->action_type = $this->get_activity_type($type);
-        $activity_insert->proposition = $disc_id;
-        $activity_insert->date = $time;
-        $activity_insert->save();
+        $act_type = $this->get_activity_type($type);
+        Common::activity($user_id, $user_name, $act_type, $disc_id, $time);
 
         $discussion_update = DiscussionModel::find($disc_id);
         $discussion_update->reply_count += 1;
@@ -100,6 +107,11 @@ class Response extends Controller
         return Common::notice_msg('Response submitted!');
     }
 
+    /* get type for activity input
+     *
+     * args:    $type = response's type
+     * returns: numeric value
+     */
     private function get_activity_type($type)
     {
         switch($type)

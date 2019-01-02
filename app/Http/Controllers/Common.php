@@ -9,6 +9,7 @@ namespace beevrr\Http\Controllers;
 use beevrr\Models\VoteModel;
 use beevrr\Models\DiscussionModel;
 use beevrr\Models\ResponseModel;
+use beevrr\Models\ActivityModel;
 use beevrr\User;
 
 use Validator;
@@ -18,6 +19,15 @@ use DateTime;
 
 class Common extends Controller
 {
+    /* get pagination array for route redirects and check whether user is on
+     * page 0
+     *
+     * args:    $l = left redirect (back)
+     *          $r = right redirect (forward)
+     *          $page = current page
+     *
+     * returns: array of redirect urls and whether the user is on page 0
+     */
     public static function get_pagination_next($l, $r, $page)
     {
         $content = array();
@@ -35,6 +45,12 @@ class Common extends Controller
         return $content;
     }
 
+    /* get whether to redirect if next pagaination page is empty
+     *
+     * args:    $db = array of results for page
+     *          $page = current page
+     * returns: whether or not to redirect
+     */
     public static function pagination_redirect($db, $page)
     {
         if(count($db) === 0 && ($page !== 1 && $page !== 0))
@@ -45,6 +61,11 @@ class Common extends Controller
         return 0;
     }
 
+    /* get pagination offset
+     *
+     * args:    $page = current page
+     * returns: offset
+     */
     public static function get_offset($page)
     {
         $offset = 0;
@@ -57,6 +78,12 @@ class Common extends Controller
         return $offset;
     }
 
+    /* set unix time (date) to time since string for array of db results
+     *
+     * args:    $db = the array of results
+     *          $t = toggle
+     * returns: none
+     */
     public static function fix_time($db, $t = 0)
     {
         if(!$t)
@@ -75,6 +102,12 @@ class Common extends Controller
         }
     }
 
+    /* check whether a user can reply to the discussion given their voting or
+     * response history
+     *
+     * args:    $disc_id = discussion id
+     * returns: whether the user can reply
+     */
     public static function check_can_reply($disc_id)
     {
         if(!Auth::check())
@@ -101,6 +134,13 @@ class Common extends Controller
         return $can_reply;
     }
 
+    /* check whether a user can vote given the status of the discussion and
+     * their voting history
+     *
+     * args:    $disc_id = discussion id
+     *          $phase = current phase of the discussion
+     * returns: whether the user can vote
+     */
     public static function check_can_vote($disc_id, $phase)
     {
         if(!Auth::check())
@@ -148,6 +188,12 @@ class Common extends Controller
         return $can_vote;
     }
 
+    /* if the discussion poster has the same id as the viewing user
+     *
+     * args:    $disc_id = id of discussion
+     *          $user_id = id of user
+     * returns: whether they have the same id
+     */
     public static function same_as_poster($disc_id, $user_id)
     {
         return count(DiscussionModel::select('id')
@@ -156,6 +202,12 @@ class Common extends Controller
             ->get());
     }
 
+    /* check if a user voted on a discussion
+     *
+     * args:    $disc_id = id of discussion
+     *          $user_id = id of user
+     * returns: whether the user voted
+     */
     public static function has_voted($disc_id, $user_id)
     {
         return count(VoteModel::select('id')
@@ -163,6 +215,13 @@ class Common extends Controller
             ->where('user_id', $user_id)
             ->get());
     }
+
+    /* check if a user responded to a discussion
+     *
+     * args:    $disc_id = id of discussion
+     *          $user_id = id of user
+     * returns: whether the user responded
+     */
     public static function has_responded($disc_id, $user_id)
     {
         return count(ResponseModel::select('id')
@@ -171,6 +230,13 @@ class Common extends Controller
             ->get());
     }
 
+    /* check if a user voted on a discussion (phase specific)
+     *
+     * args:    $disc_id = id of discussion
+     *          $user_id = id of user
+     *          $phase = current phase of the discussion
+     * returns: whether the user voted during a specified phase
+     */
     public static function check_voted($disc_id, $user_id, $phase)
     {
         return count(VoteModel::select('id')
@@ -180,6 +246,11 @@ class Common extends Controller
             ->get());
     }
 
+    /* check if a discussions exists
+     *
+     * args:    $disc_id = discussion id
+     * returns: if exists
+     */
     public static function check_exists($disc_id)
     {
         $exists = 0;
@@ -192,6 +263,11 @@ class Common extends Controller
         return $exists;
     }
 
+    /* flash notice message for notice view and perform redirect
+     *
+     * args:    $msg = message to display
+     * returns: redirect to notice view
+     */
     public static function notice_msg($msg)
     {
         session()->flash('notice', $msg);
@@ -199,6 +275,11 @@ class Common extends Controller
         return redirect('notice');
     }
 
+    /* get stats for bottom page display
+     *
+     * args:    none
+     * returns: array containing counts
+     */
     public static function get_stats()
     {
         $content = array();
@@ -216,6 +297,11 @@ class Common extends Controller
         return $content;
     }
 
+    /* covert unix time stamp to time since string
+     *
+     * args:    $datetime = unix time stamp
+     * returns: time since string
+     */
     public static function tm($datetime, $full = false)
     {
         $datetime = '@' . $datetime;
@@ -253,5 +339,26 @@ class Common extends Controller
         }
 
         return $string ? implode(', ', $string) . ' ago' : 'just now';
+    }
+
+    /* insert new activity when a user does something (vote, respond, or post
+     * a discussion)
+     *
+     * args:    $user_id = id of user
+     *          $user_name = name of user
+     *          $type = type of activity (see "activities" migration)
+     *          $prop = proposition id
+     *          $time = time of input
+     * returns: none
+     */
+    public static function activity($user_id, $user_name, $type, $prop, $time)
+    {
+        $activity_insert = new ActivityModel;
+        $activity_insert->user_id = $user_id;
+        $activity_insert->user_name = $user_name;
+        $activity_insert->action_type = $type;
+        $activity_insert->proposition = $prop;
+        $activity_insert->date = $time;
+        $activity_insert->save();
     }
 }

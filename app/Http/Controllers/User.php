@@ -17,6 +17,12 @@ use Validator;
 
 class User extends Controller
 {
+    /* view a user's page
+     *
+     * args:    $user_id = id of user
+     * returns: if error: notice redirect
+     *          else: user page
+     */
     public function user_view($user_id)
     {
         if(count($user = $this->check_valid_user($user_id)) === 0)
@@ -30,6 +36,14 @@ class User extends Controller
         return view('user_view')->with('content', $content);;
     }
 
+    /* prepare user info page to display activities
+     *
+     * args:    $user_id = id of user to view
+     *          $option = valid option (total or active responses, votes, etc)
+     *          $page = pagination
+     * returns: if error: notice redirect
+     *          else: user info page with activities
+     */
     public function user_info($user_id, $option, $page = 0)
     {
         if(count($user = $this->check_valid_user($user_id)) === 0)
@@ -48,74 +62,9 @@ class User extends Controller
         $pagination = config('global.pagination');
         $offset = Common::get_offset($page);
 
-        switch($option)
-        {
-            case 'tot_res':
-                $title = 'total responses';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->whereBetween('action_type', [5, 6])
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-            case 'act_res':
-                $title = 'active responses';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->whereBetween('action_type', [5, 6])
-                    ->where('is_active', 1)
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-            case 'tot_vot':
-                $title = 'total votes';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->whereBetween('action_type', [0, 4])
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-            case 'act_vot':
-                $title = 'active votes';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->whereBetween('action_type', [0, 4])
-                    ->where('is_active', 1)
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-            case 'tot_dis':
-                $title = 'total discussions';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->where('action_type', 7)
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-            case 'act_dis':
-                $title = 'active discussions';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->where('action_type', 7)
-                    ->where('is_active', 1)
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-            default:
-                $title = 'full activity';
-                $get = ActivityModel::where('user_id', $user_id)
-                    ->orderBy('date', 'DESC')
-                    ->skip($offset)
-                    ->take($pagination)
-                    ->get();
-                break;
-        }
+        $act = $this->activity_model($option, $user_id, $offset, $pagination);
+        $title = $act['title'];
+        $get = $act['model'];
 
         $activities = $this->get_user_activity($get);
 
@@ -144,6 +93,11 @@ class User extends Controller
         return view('user_info')->with('content', $content);
     }
 
+    /* convert user activities in db to readable strings
+     *
+     * args:    $activities = array of user activities
+     * returns: array containing activities as strings for viewing
+     */
     private function get_user_activity($activities)
     {
         $activity = array();
@@ -193,6 +147,12 @@ class User extends Controller
         return $activity;
     }
 
+    /* check if user exists
+     *
+     * args:    $user_id = id of user
+     * returns: if valid: user array
+     *          if not: 0
+     */
     private function check_valid_user($user_id)
     {
         if($select = \beevrr\User::select('*')->where('id', $user_id)->get())
@@ -201,5 +161,89 @@ class User extends Controller
         }
 
         return 0;
+    }
+
+    /* get user activities from database
+     *
+     * args:    $option = the type of activity set to return
+     *          $user_id = id of the user
+     *          $offset = pagination offset
+     *          $pagination = limit
+     * returns: array containing title and retrieved model
+     */
+    private function activity_model($option, $user_id, $offset, $pagination)
+    {
+        $get = array();
+
+        switch($option)
+        {
+            case 'tot_res':
+                $get['title'] = 'total responses';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->whereBetween('action_type', [5, 6])
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+            case 'act_res':
+                $get['title'] = 'active responses';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->whereBetween('action_type', [5, 6])
+                    ->where('is_active', 1)
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+            case 'tot_vot':
+                $get['title'] = 'total votes';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->whereBetween('action_type', [0, 4])
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+            case 'act_vot':
+                $get['title'] = 'active votes';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->whereBetween('action_type', [0, 4])
+                    ->where('is_active', 1)
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+            case 'tot_dis':
+                $get['title'] = 'total discussions';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->where('action_type', 7)
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+            case 'act_dis':
+                $get['title'] = 'active discussions';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->where('action_type', 7)
+                    ->where('is_active', 1)
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+            default:
+                $get['title'] = 'full activity';
+                $get['model'] = ActivityModel::where('user_id', $user_id)
+                    ->orderBy('date', 'DESC')
+                    ->skip($offset)
+                    ->take($pagination)
+                    ->get();
+                break;
+        }
+
+        return $get;
     }
 }
