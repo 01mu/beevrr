@@ -180,7 +180,7 @@ class Views extends Controller
 
         $user_update = User::find(Auth::user()->id);
 
-        $user_update->bio = $request->bio;
+        $user_update->bio = strip_tags($request->bio);
         $user_update->save();
 
         return Common::notice_msg('Bio updated!');

@@ -69,7 +69,7 @@
         </div>
         <div class="wrapper50">
             <div class="box">
-                {{ $content['user'][0]->bio }}
+                {!! nl2br($content['user'][0]->bio) !!}
             </div>
     </div>
 </div>
