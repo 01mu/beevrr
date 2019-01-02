@@ -31,7 +31,7 @@ class Activities extends Migration
             $table->integer('action_type');
             $table->integer('proposition');
             $table->integer('is_active')->default(1);
-            $table->integer('date')->default(time());
+            $table->integer('date');
         });
     }
 

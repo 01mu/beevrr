@@ -12,5 +12,5 @@ class VoteModel extends Model
 {
     protected $table = 'votes';
     public $timestamps = false;
-    protected $dateFormat = 'U'; //
+    protected $dateFormat = 'U';
 }

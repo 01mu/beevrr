@@ -110,7 +110,6 @@ class Discussion extends Controller
         $v_end_date = $a_end_date + $this->to_unix($request->v);
 
         $discussion_insert = new DiscussionModel;
-
         $discussion_insert->proposition = strip_tags($request->prop);
         $discussion_insert->argument = strip_tags($request->arg);
         $discussion_insert->user_name = $user_name;
@@ -124,15 +123,14 @@ class Discussion extends Controller
         $discussion_insert->save();
 
         $activity_insert = new ActivityModel;
-
         $activity_insert->user_id = $user_id;
         $activity_insert->user_name = $user_name;
         $activity_insert->action_type = 7;
         $activity_insert->proposition = $discussion_insert->id;
+        $activity_insert->date = $time;
         $activity_insert->save();
 
         $user_update = User::find($user_id);
-
         $user_update->total_discussions += 1;
         $user_update->active_discussions += 1;
         $user_update->save();

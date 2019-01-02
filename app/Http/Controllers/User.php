@@ -171,7 +171,7 @@ class User extends Controller
                 case($type === 0 || $type === 3 || $type === 5):
                     $type = '(for)';
                     break;
-                case($type === 1 || $type === 6):
+                case($type === 1 || $type === 4 || $type === 6):
                     $type = '(against)';
                     break;
                 case($type === 2):
