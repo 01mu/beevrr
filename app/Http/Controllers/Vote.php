@@ -191,9 +191,9 @@ class Vote extends Controller
             $aga_per = $aga_count / $discussion_update->pa_vote_count * 100;
             $und_per = $und_count / $discussion_update->pa_vote_count * 100;
 
-            $discussion_update->pa_for_per = $for_per;
-            $discussion_update->pa_against_per = $aga_per;
-            $discussion_update->pa_undecided_per = $und_per;
+            $discussion_update->pa_for_per = number_format($for_per, 2);
+            $discussion_update->pa_against_per = number_format($aga_per, 2);
+            $discussion_update->pa_undecided_per = number_format($und_per, 2);
 
             $discussion_update->save();
         }
@@ -229,8 +229,8 @@ class Vote extends Controller
             $pvfp = $for_count / $discussion_update->pv_vote_count * 100;
             $pvap = $aga_count / $discussion_update->pv_vote_count * 100;
 
-            $discussion_update->pv_for_per = $pvfp;
-            $discussion_update->pv_against_per = $pvap;
+            $discussion_update->pv_for_per = number_format($pvfp, 2);
+            $discussion_update->pv_against_per = number_format($pvap);
 
             $discussion_update->save();
 
@@ -252,8 +252,11 @@ class Vote extends Controller
             ->first()
             ->pa_against_per;
 
-        $discussion_update->for_change = $pvfp - $pa_for_per;
-        $discussion_update->against_change = $pvap - $pa_against_per;
+        $fc = number_format($pvfp - $pa_for_per, 2);
+        $ac = number_format($pvap - $pa_against_per, 2);
+
+        $discussion_update->for_change = $fc
+        $discussion_update->against_change = $ac;
 
         $discussion_update->save();
     }
