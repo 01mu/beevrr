@@ -169,12 +169,6 @@ class Vote extends Controller
 
             $discussion_update->save();
 
-            $vote_count = DiscussionModel::select('pa_vote_count')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pa_vote_count;
-
             $for_count = DiscussionModel::select('pa_for')
                 ->where('id', $disc_id)
                 ->get()
@@ -193,9 +187,9 @@ class Vote extends Controller
                 ->first()
                 ->pa_undecided;
 
-            $for_per = $for_count / $vote_count * 100;
-            $aga_per = $aga_count / $vote_count * 100;
-            $und_per = $und_count / $vote_count * 100;
+            $for_per = $for_count / $discussion_update->pa_vote_count * 100;
+            $aga_per = $aga_count / $discussion_update->pa_vote_count * 100;
+            $und_per = $und_count / $discussion_update->pa_vote_count * 100;
 
             $discussion_update->pa_for_per = $for_per;
             $discussion_update->pa_against_per = $aga_per;
@@ -214,17 +208,11 @@ class Vote extends Controller
                     $discussion_update->pv_for += 1;
                     break;
                 default:
-                    $discussion_update->pv_for += 1;
+                    $discussion_update->pv_against += 1;
                     break;
             }
 
             $discussion_update->save();
-
-            $vote_count = DiscussionModel::select('pv_vote_count')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pv_vote_count;
 
             $for_count = DiscussionModel::select('pv_for')
                 ->where('id', $disc_id)
@@ -238,19 +226,19 @@ class Vote extends Controller
                 ->first()
                 ->pv_against;
 
-            $for_per = $for_count / $vote_count * 100;
-            $aga_per = $aga_count / $vote_count * 100;
+            $pvfp = $for_count / $$discussion_update->pv_vote_count * 100;
+            $pvap = $aga_count / $$discussion_update->pv_vote_count * 100;
 
-            $discussion_update->pv_for_per = $for_per;
-            $discussion_update->pv_against_per = $aga_per;
+            $discussion_update->pv_for_per = $pvfp;
+            $discussion_update->pv_against_per = $pvap;
 
             $discussion_update->save();
 
-            $this->update_changes($discussion_update, $disc_id);
+            $this->update_changes($discussion_update, $disc_id, $pvfp, $pvap);
         }
     }
 
-    private function update_changes($discussion_update, $disc_id)
+    private function update_changes($discussion_update, $disc_id, $pvfp, $pvap)
     {
         $pa_for_per = DiscussionModel::select('pa_for_per')
             ->where('id', $disc_id)
@@ -264,20 +252,8 @@ class Vote extends Controller
             ->first()
             ->pa_against_per;
 
-        $pv_for_per = DiscussionModel::select('pv_for_per')
-            ->where('id', $disc_id)
-            ->get()
-            ->first()
-            ->pv_for_per;
-
-        $pv_against_per = DiscussionModel::select('pv_against_per')
-            ->where('id', $disc_id)
-            ->get()
-            ->first()
-            ->pv_against_per;
-
-        $discussion_update->for_change = $pv_for_per - $pa_for_per;
-        $discussion_update->against_change = $pv_against_per - $pa_against_per;
+        $discussion_update->for_change = $pvfp - $pa_for_per;
+        $discussion_update->against_change = $pvap - $pa_against_per;
 
         $discussion_update->save();
     }
