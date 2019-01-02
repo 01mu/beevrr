@@ -57,4 +57,7 @@ Route::get('change_password', 'Views@home_redirect');
 Route::get('change_bio', 'Views@home_redirect');
 
 // https
-//URL::forceScheme('https');
+if(config('global.use_https'))
+{
+    URL::forceScheme('https');
+}
