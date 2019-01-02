@@ -239,7 +239,7 @@ class Discussion extends Controller
         switch($type)
         {
             case '1hour':
-                $time = 1;
+                $time = 60 * 60;
                 break;
             case '6hours':
                 $time = 60 * 60 * 6;
