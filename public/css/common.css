@@ -153,3 +153,10 @@ html
     padding: 15px;
     margin-bottom: 5px;
 }
+
+hr
+{
+    background-color: #cccccc;
+    border: 0 none;
+    height: .8px;
+}
