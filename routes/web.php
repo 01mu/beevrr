@@ -55,3 +55,5 @@ Route::get('user_info/{id}', 'Views@home_redirect');
 Route::get('logout', 'Views@home_redirect');
 Route::get('change_password', 'Views@home_redirect');
 Route::get('change_bio', 'Views@home_redirect');
+
+URL::forceScheme('https');
