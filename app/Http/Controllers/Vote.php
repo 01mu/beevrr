@@ -283,7 +283,7 @@ class Vote extends Controller
         $fc = number_format($pvfp - $pa_for_per, 2);
         $ac = number_format($pvap - $pa_against_per, 2);
 
-        $discussion_update->for_change = $fc
+        $discussion_update->for_change = $fc;
         $discussion_update->against_change = $ac;
 
         $discussion_update->save();
