@@ -226,8 +226,8 @@ class Vote extends Controller
                 ->first()
                 ->pv_against;
 
-            $pvfp = $for_count / $$discussion_update->pv_vote_count * 100;
-            $pvap = $aga_count / $$discussion_update->pv_vote_count * 100;
+            $pvfp = $for_count / $discussion_update->pv_vote_count * 100;
+            $pvap = $aga_count / $discussion_update->pv_vote_count * 100;
 
             $discussion_update->pv_for_per = $pvfp;
             $discussion_update->pv_against_per = $pvap;
