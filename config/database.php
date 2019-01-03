@@ -1,4 +1,8 @@
 <?php
+/*
+ * beevrr
+ * github.com/01mu
+ */
 
 $url = parse_url(getenv("DATABASE_URL"));
 
