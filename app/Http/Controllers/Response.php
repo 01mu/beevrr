@@ -77,32 +77,14 @@ class Response extends Controller
         }
 
         $time = time();
-        $type = $request->type;
+        $opinion = $request->type;
+        $act_type = $this->get_activity_type($opinion);
+        $response = strip_tags($request->resp);
 
-        $user_id = Auth::user()->id;
-        $user_name = Auth::user()->user_name;
-
-        $discussion_insert = new ResponseModel;
-        $discussion_insert->response = strip_tags($request->resp);
-        $discussion_insert->proposition = $disc_id;
-        $discussion_insert->user_id = $user_id;
-        $discussion_insert->user_name = $user_name;
-        $discussion_insert->opinion = $type;
-        $discussion_insert->date = $time;
-        $discussion_insert->save();
-
-        $act_type = $this->get_activity_type($type);
-        Common::activity($user_id, $user_name, $act_type, $disc_id, $time);
-
-        $discussion_update = DiscussionModel::find($disc_id);
-        $discussion_update->reply_count += 1;
-        $discussion_update->recent_action = $time;
-        $discussion_update->save();
-
-        $user_update = User::find($user_id);
-        $user_update->total_responses += 1;
-        $user_update->active_responses += 1;
-        $user_update->save();
+        ResponseModel::insert($response, $disc_id, $opinion, $time);
+        ActivityModel::insert($act_type, $disc_id, $time);
+        DiscussionModel::update_disc($disc_id, 'response', $time);
+        User::update_stat('response');
 
         return Common::notice_msg('Response submitted!');
     }

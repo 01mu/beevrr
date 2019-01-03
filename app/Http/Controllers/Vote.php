@@ -92,33 +92,14 @@ class Vote extends Controller
         }
 
         $time = time();
-
-        $user_id = Auth::user()->id;
-        $user_name = Auth::user()->user_name;
-
-        $discussion_update = DiscussionModel::find($disc_id);
-        $discussion_update->vote_count += 1;
-        $discussion_update->recent_action = $time;
-        $discussion_update->save();
+        $act_type = $this->get_activity_type($phase);
 
         $this->update_vote_info($disc_id, $phase);
 
-        $vote_insert = new VoteModel;
-        $vote_insert->opinion = $request->v;
-        $vote_insert->proposition = $disc_id;
-        $vote_insert->user_id = $user_id;
-        $vote_insert->user_name = $user_name;
-        $vote_insert->phase = $phase;
-        $vote_insert->date = $time;
-        $vote_insert->save();
-
-        $act_type = $this->get_activity_type($phase);
-        Common::activity($user_id, $user_name, $act_type, $disc_id, $time);
-
-        $user_update = User::find($user_id);
-        $user_update->total_votes += 1;
-        $user_update->active_votes += 1;
-        $user_update->save();
+        VoteModel::insert($request->v, $disc_id, $phase, $time);
+        ActivityModel::insert($act_type, $disc_id, $time);
+        DiscussionModel::update_disc($disc_id, 'vote', $time);
+        User::update_stat('vote');
 
         return Common::notice_msg('Vote submitted!');
     }

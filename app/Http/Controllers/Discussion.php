@@ -118,18 +118,14 @@ class Discussion extends Controller
         }
 
         $time = time();
-        $user_id = Auth::user()->id;
-        $user_name = Auth::user()->user_name;
-        $pa_end_date = time() + $this->to_unix($request->pa);
-        $a_end_date = $pa_end_date + $this->to_unix($request->a);
-        $v_end_date = $a_end_date + $this->to_unix($request->v);
+        $pa = time() + $this->to_unix($request->pa);
+        $a = $pa + $this->to_unix($request->a);
+        $v = $a + $this->to_unix($request->v);
         $prop = strip_tags($request->prop);
         $arg = strip_tags($request->arg);
 
-        DiscussionModel::insert($prop, $arg, $user_name, $user_id, $pa_end_date,
-            $a_end_date, $v_end_date, $time);
-
-        User::update_stat($user_id, 'disc');
+        DiscussionModel::insert($prop, $arg, $pa, $a, $v, $time);
+        User::update_stat('disc');
 
         return Common::notice_msg('Discussion submitted!');
     }

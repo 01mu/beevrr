@@ -10,6 +10,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Auth;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -39,9 +41,9 @@ class User extends Authenticatable
      *          $type = type of statistic to be updated
      * returns: none
      */
-    public static function update_stat($user_id, $type)
+    public static function update_stat($type)
     {
-        $user_update = User::find($user_id);
+        $user_update = User::find(Auth::user()->id);
 
         switch($type)
         {
