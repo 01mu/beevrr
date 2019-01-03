@@ -4,7 +4,7 @@
  * github.com/01mu
  */
 
-$url = parse_url(getenv("DATABASE_URL"));
+$url = parse_url(getenv("HEROKU_POSTGRESQL_GOLD_URL"));
 
 $host = $url["host"];
 $username = $url["user"];
