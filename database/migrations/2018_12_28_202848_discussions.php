@@ -34,7 +34,7 @@ class Discussions extends Migration
             $table->integer('post_date');
             $table->string('user_name');
             $table->integer('user_id');
-            $table->string('current_phase');
+            $table->string('current_phase')->default('pre-argument');
 
             /*  end dates */
             $table->integer('pa_end_date')->default(0);

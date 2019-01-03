@@ -32,4 +32,33 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /* update user statistic
+     *
+     * args:    $user_id = user id
+     *          $type = type of statistic to be updated
+     * returns: none
+     */
+    public static function update_stat($user_id, $type)
+    {
+        $user_update = User::find($user_id);
+
+        switch($type)
+        {
+            case 'disc':
+                $user_update->total_discussions += 1;
+                $user_update->active_discussions += 1;
+                break;
+            case 'vote':
+                $user_update->total_votes += 1;
+                $user_update->active_votes += 1;
+                break;
+            default:
+                $user_update->total_responses += 1;
+                $user_update->active_responses += 1;
+                break;
+        }
+
+        $user_update->save();
+    }
 }

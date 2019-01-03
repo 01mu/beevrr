@@ -118,34 +118,18 @@ class Discussion extends Controller
         }
 
         $time = time();
-
         $user_id = Auth::user()->id;
         $user_name = Auth::user()->user_name;
-
         $pa_end_date = time() + $this->to_unix($request->pa);
         $a_end_date = $pa_end_date + $this->to_unix($request->a);
         $v_end_date = $a_end_date + $this->to_unix($request->v);
+        $prop = strip_tags($request->prop);
+        $arg = strip_tags($request->arg);
 
-        $discussion_insert = new DiscussionModel;
-        $discussion_insert->proposition = strip_tags($request->prop);
-        $discussion_insert->argument = strip_tags($request->arg);
-        $discussion_insert->user_name = $user_name;
-        $discussion_insert->user_id = $user_id;
-        $discussion_insert->pa_end_date = $pa_end_date;
-        $discussion_insert->a_end_date = $a_end_date;
-        $discussion_insert->v_end_date = $v_end_date;
-        $discussion_insert->post_date = $time;
-        $discussion_insert->recent_action = $time;
-        $discussion_insert->current_phase = 'pre-argument';
-        $discussion_insert->save();
+        DiscussionModel::insert($prop, $arg, $user_name, $user_id, $pa_end_date,
+            $a_end_date, $v_end_date, $time);
 
-        $prop = $discussion_insert->id;
-        Common::activity($user_id, $user_name, 7, $prop, $time);
-
-        $user_update = User::find($user_id);
-        $user_update->total_discussions += 1;
-        $user_update->active_discussions += 1;
-        $user_update->save();
+        User::update_stat($user_id, 'disc');
 
         return Common::notice_msg('Discussion submitted!');
     }
