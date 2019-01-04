@@ -63,4 +63,26 @@ class User extends Authenticatable
 
         $user_update->save();
     }
+
+    public static function update_profile($type, $new)
+    {
+        $user_update = User::find(Auth::user()->id);
+
+        switch($type)
+        {
+            case 'pass':
+                $user_update->password = $new;
+                break;
+            default:
+                $user_update->bio = $new;
+                break;
+        }
+
+        $user_update->save();
+    }
+
+    public static function select_from($user_id)
+    {
+        return User::select('*')->where('id', $user_id)->get();
+    }
 }

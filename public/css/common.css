@@ -160,3 +160,9 @@ hr
     border: 0 none;
     height: .8px;
 }
+
+.hidden
+{
+    visibility: hidden;
+    position: absolute;
+}

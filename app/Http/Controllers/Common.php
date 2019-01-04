@@ -145,7 +145,7 @@ class Common extends Controller
     {
         if(!Auth::check())
         {
-            return 0;
+            //return 0;
         }
 
         $can_vote = 1;

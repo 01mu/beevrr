@@ -51,6 +51,10 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'user-exists' => \beevrr\Http\Middleware\Custom\CheckUserExists::class,
+        'can-vote' => \beevrr\Http\Middleware\Custom\CheckCanVote::class,
+        'disc-exists' => \beevrr\Http\Middleware\Custom\CheckDiscussionExists::class,
+        'logged-in' => \beevrr\Http\Middleware\Custom\CheckLoggedIn::class,
         'auth' => \beevrr\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

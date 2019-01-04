@@ -8,7 +8,7 @@ namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use beevrr\Models\ActivityModel;
-
+use beevrr\Http\Controllers\Common;
 use Auth;
 
 class DiscussionModel extends Model
@@ -72,5 +72,43 @@ class DiscussionModel extends Model
 
         $discussion_update->recent_action = $time;
         $discussion_update->save();
+    }
+
+    public static function get_index($page, $pagination)
+    {
+        $discussions = DiscussionModel::orderBy('recent_action', 'DESC')
+            ->skip(Common::get_offset($page))
+            ->take($pagination)
+            ->get();
+
+        Common::fix_time($discussions);
+
+        return $discussions;
+    }
+
+    public static function search_results($query, $page, $pagination)
+    {
+        $search_results = DiscussionModel::orderBy('recent_action', 'DESC')
+            ->skip(Common::get_offset($page))
+            ->take($pagination)
+            ->where('proposition', 'like', $query)
+            ->orWhere('proposition', 'like', $query)
+            ->get();
+
+        Common::fix_time($search_results);
+
+        return $search_results;
+    }
+
+    public static function check_exists($disc_id)
+    {
+        return DiscussionModel::select('id')->where('id', $disc_id)->get();
+    }
+
+    public static function select_from($disc_id)
+    {
+        return DiscussionModel::select('*')
+            ->where('id', $disc_id)
+            ->get();
     }
 }

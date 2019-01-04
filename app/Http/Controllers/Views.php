@@ -26,13 +26,7 @@ class Views extends Controller
     public function index($page = 0)
     {
         $pagination = config('global.pagination');
-
-        $discussions = DiscussionModel::orderBy('recent_action', 'DESC')
-            ->skip(Common::get_offset($page))
-            ->take($pagination)
-            ->get();
-
-        Common::fix_time($discussions);
+        $discussions = DiscussionModel::get_index($page, $pagination);
 
         if(Common::pagination_redirect($discussions, $page))
         {
@@ -41,10 +35,9 @@ class Views extends Controller
 
         $content = Common::get_stats();
         $content['discussions'] = $discussions;
-
+        $content['disc_count'] = count($discussions);
         $l = route('page', array( 'p' => $page - 1,));
         $r = route('page', array( 'p' => $page + 1,));
-
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
         return view('index')->with('content', $content);
@@ -58,11 +51,6 @@ class Views extends Controller
      */
     public function dashboard()
     {
-        if(!$user = Auth::user())
-        {
-            return Common::notice_msg('Not logged in!');
-        }
-
         $content =  Common::get_stats();
         $content['user'] = User::where('id', Auth::user()->id)->get();
 
@@ -92,29 +80,16 @@ class Views extends Controller
         }
 
         $pagination = config('global.pagination');
-
         $query = '%' . $request->q . '%';
-
-        $result = DiscussionModel::orderBy('recent_action', 'DESC')
-            ->skip(Common::get_offset($page))
-            ->take($pagination)
-            ->where('proposition', 'like', $query)
-            ->orWhere('proposition', 'like', $query)
-            ->get();
-
-        Common::fix_time($result);
-
+        $result = DiscussionModel::search_results($query, $page, $pagination);
         $content = Common::get_stats();
         $content['search'] = $result;
-
         $l = route('search-post', array(
                 'q' => $request->q,
                 'p' => $page - 1,));
-
         $r = route('search-post', array(
                 'q' => $request->q,
                 'p' => $page + 1,));
-
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
         return view('search_view')->with('content', $content);
@@ -127,11 +102,6 @@ class Views extends Controller
      */
     public function change_pw(Request $request)
     {
-        if(!Auth::check())
-        {
-            return Common::notice_msg('Not logged in!');
-        }
-
         $validator = Validator::make($request->all(), array(
             'oldpw' => ['required', 'min:3', 'string', 'same:conoldpw'],
             'conoldpw' => ['required', 'min:3', 'string', 'same:oldpw'],
@@ -145,11 +115,7 @@ class Views extends Controller
 
         if(Hash::check($request->oldpw, Auth::user()->password))
         {
-            $user_update = User::find(Auth::user()->id);
-
-            $user_update->password = Hash::make($request->newpw);
-            $user_update->save();
-
+            User::update_profile('pass', Hash::make($request->newpw));
             Auth::logout();
 
             return Common::notice_msg('Password changed!');
@@ -165,11 +131,6 @@ class Views extends Controller
      */
     public function change_bio(Request $request)
     {
-        if(!Auth::check())
-        {
-            return Common::notice_msg('Not logged in!');
-        }
-
         $validator = Validator::make($request->all(), array(
             'bio' => ['required', 'max:500'],));
 
@@ -178,10 +139,7 @@ class Views extends Controller
             return Common::notice_msg('Invalid input!');
         }
 
-        $user_update = User::find(Auth::user()->id);
-
-        $user_update->bio = strip_tags($request->bio);
-        $user_update->save();
+        User::update_profile('bio', strip_tags($request->bio));
 
         return Common::notice_msg('Bio updated!');
     }

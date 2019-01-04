@@ -25,15 +25,10 @@ class User extends Controller
      */
     public function user_view($user_id)
     {
-        if(count($user = $this->check_valid_user($user_id)) === 0)
-        {
-            return Common::notice_msg('Invalid ID!');
-        }
-
         $content = Common::get_stats();
-        $content['user'] = $user;
+        $content['user'] = \beevrr\User::select_from($user_id);
 
-        return view('user_view')->with('content', $content);;
+        return view('user_view')->with('content', $content);
     }
 
     /* prepare user info page to display activities
@@ -46,11 +41,6 @@ class User extends Controller
      */
     public function user_info($user_id, $option, $page = 0)
     {
-        if(count($user = $this->check_valid_user($user_id)) === 0)
-        {
-            return Common::notice_msg('Invalid ID!');
-        }
-
         $validator = Validator::make([$option], array(
             ['in:tot_res,act_res,tot_vot,act_vot,tot_dis,act_dis,act'],));
 
@@ -58,6 +48,8 @@ class User extends Controller
         {
             return Common::notice_msg('Invalid option!');
         }
+
+        $user = \beevrr\User::select_from($user_id);;
 
         $pagination = config('global.pagination');
         $offset = Common::get_offset($page);

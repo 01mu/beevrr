@@ -30,16 +30,6 @@ class Vote extends Controller
      */
     public function vote_view($phase, $disc_id)
     {
-        if(!Common::check_exists($disc_id))
-        {
-            return Common::notice_msg('Invalid ID!');
-        }
-
-        if(!Common::check_can_vote($disc_id, $phase))
-        {
-            return Common::notice_msg('Cannot vote!');
-        }
-
         $content = array();
 
         $content['phase'] = $phase;
@@ -57,16 +47,6 @@ class Vote extends Controller
      */
     public function vote_post($phase, $disc_id, Request $request)
     {
-        if(!Common::check_exists($disc_id))
-        {
-            return Common::notice_msg('Invalid ID!');
-        }
-
-        if(!Common::check_can_vote($disc_id, $phase))
-        {
-            return Common::notice_msg('Cannot vote!');
-        }
-
         $captcha = Validator::make(Input::all(), array(
             'captcha' => 'required|captcha',));
 
@@ -152,121 +132,78 @@ class Vote extends Controller
     {
         if($phase === 'pre-argument')
         {
-            $discussion_update = DiscussionModel::find($disc_id);
-            $discussion_update->pa_vote_count += 1;
+            $disc_up = DiscussionModel::find($disc_id);
+            $disc_up->pa_vote_count += 1;
 
             switch(Input::get('v'))
             {
                 case 'for':
-                    $discussion_update->pa_for += 1;
+                    $disc_up->pa_for += 1;
                     break;
                 case 'against':
-                    $discussion_update->pa_against += 1;
+                    $disc_up->pa_against += 1;
                     break;
                 default:
-                    $discussion_update->pa_undecided += 1;
+                    $disc_up->pa_undecided += 1;
                     break;
             }
 
-            $discussion_update->save();
+            $for_per = $disc_up->pa_for / $disc_up->pa_vote_count * 100;
+            $aga_per = $disc_up->pa_against / $disc_up->pa_vote_count * 100;
+            $und_per = $disc_up->pa_undecided / $disc_up->pa_vote_count * 100;
 
-            $for_count = DiscussionModel::select('pa_for')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pa_for;
+            $disc_up->pa_for_per = number_format($for_per, 2);
+            $disc_up->pa_against_per = number_format($aga_per, 2);
+            $disc_up->pa_undecided_per = number_format($und_per, 2);
 
-            $aga_count = DiscussionModel::select('pa_against')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pa_against;
-
-            $und_count = DiscussionModel::select('pa_undecided')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pa_undecided;
-
-            $for_per = $for_count / $discussion_update->pa_vote_count * 100;
-            $aga_per = $aga_count / $discussion_update->pa_vote_count * 100;
-            $und_per = $und_count / $discussion_update->pa_vote_count * 100;
-
-            $discussion_update->pa_for_per = number_format($for_per, 2);
-            $discussion_update->pa_against_per = number_format($aga_per, 2);
-            $discussion_update->pa_undecided_per = number_format($und_per, 2);
-
-            $discussion_update->save();
+            $disc_up->save();
         }
         else
         {
-            $discussion_update = DiscussionModel::find($disc_id);
-            $discussion_update->pv_vote_count += 1;
+            $disc_up = DiscussionModel::find($disc_id);
+            $disc_up->pv_vote_count += 1;
 
             switch(Input::get('v'))
             {
                 case 'for':
-                    $discussion_update->pv_for += 1;
+                    $disc_up->pv_for += 1;
                     break;
                 default:
-                    $discussion_update->pv_against += 1;
+                    $disc_up->pv_against += 1;
                     break;
             }
 
-            $discussion_update->save();
+            $pvfp = $disc_up->pv_for / $disc_up->pv_vote_count * 100;
+            $pvap = $disc_up->pv_against / $disc_up->pv_vote_count * 100;
 
-            $for_count = DiscussionModel::select('pv_for')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pv_for;
+            $disc_up->pv_for_per = number_format($pvfp, 2);
+            $disc_up->pv_against_per = number_format($pvap);
 
-            $aga_count = DiscussionModel::select('pv_against')
-                ->where('id', $disc_id)
-                ->get()
-                ->first()
-                ->pv_against;
+            $disc_up->save();
 
-            $pvfp = $for_count / $discussion_update->pv_vote_count * 100;
-            $pvap = $aga_count / $discussion_update->pv_vote_count * 100;
-
-            $discussion_update->pv_for_per = number_format($pvfp, 2);
-            $discussion_update->pv_against_per = number_format($pvap);
-
-            $discussion_update->save();
-
-            $this->update_changes($discussion_update, $disc_id, $pvfp, $pvap);
+            $this->update_changes($disc_up, $disc_id, $pvfp, $pvap);
         }
     }
 
     /* update opinion percentage point change for discussion
      *
-     * args:    $discussion_update = model for last post-vote update
+     * args:    $disc_up = model for last post-argument update
      *          $disc_id = id of discussion
      *          $pvfv = post-voting for percentage
      *          $pvag = post-voting against percentage
      * returns: none
      */
-    private function update_changes($discussion_update, $disc_id, $pvfp, $pvap)
+    private function update_changes($disc_up, $disc_id, $pvfp, $pvap)
     {
-        $pa_for_per = DiscussionModel::select('pa_for_per')
-            ->where('id', $disc_id)
-            ->get()
-            ->first()
-            ->pa_for_per;
-
-        $pa_against_per = DiscussionModel::select('pa_against_per')
-            ->where('id', $disc_id)
-            ->get()
-            ->first()
-            ->pa_against_per;
+        $pa_for_per = $disc_up->pa_for_per;
+        $pa_against_per = $disc_up->pa_against_per;
 
         $fc = number_format($pvfp - $pa_for_per, 2);
         $ac = number_format($pvap - $pa_against_per, 2);
 
-        $discussion_update->for_change = $fc;
-        $discussion_update->against_change = $ac;
+        $disc_up->for_change = $fc;
+        $disc_up->against_change = $ac;
 
-        $discussion_update->save();
+        $disc_up->save();
     }
 }
