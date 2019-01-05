@@ -9,6 +9,8 @@ namespace beevrr\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
+use beevrr\Http\Middleware\Custom\CheckCanVote;
+use beevrr\Http\Middleware\Custom\CheckCanRespond;
 use beevrr\Http\Controllers\Common;
 use beevrr\Models\DiscussionModel;
 use beevrr\Models\ResponseModel;
@@ -29,42 +31,21 @@ class Discussion extends Controller
      */
     public function disc_view($disc_id)
     {
-        if(count($select = $this->check_valid_disc($disc_id)) === 0)
-        {
-            session()->flash('notice', 'Invalid ID!');
-
-            return redirect('notice');
-        }
-
-        $discussion = $select[0];
+        $discussion = DiscussionModel::select_from($disc_id)[0];
         $phase = $discussion->current_phase;
-
-        $for = ResponseModel::select('*')
-            ->where('proposition', $disc_id)
-            ->where('opinion', 'for')
-            ->orderBy('date', 'ASC')
-            ->get();
-
-        $against = ResponseModel::select('*')
-            ->where('proposition', $disc_id)
-            ->where('opinion', 'against')
-            ->orderBy('date', 'ASC')
-            ->get();
 
         $discussion->post_date = Common::tm($discussion->post_date);
         $this->add_change_symbol($discussion);
 
-        Common::fix_time($for, 1);
-        Common::fix_time($against, 1);
-
         $content = Common::get_stats();
         $content['next_phase'] = $this->get_changing_message($discussion);
         $content['action'] = $this->get_user_action($disc_id);
-        $content['can_reply'] = Common::check_can_reply($disc_id);
-        $content['can_vote'] = Common::check_can_vote($disc_id, $phase);
+        $content['can_reply'] = CheckCanRespond::check_can_respond($disc_id);
+        $content['can_vote'] = CheckCanVote::check_can_vote($disc_id, $phase);
         $content['discussion'] = $discussion;
-        $content['for'] = $for;
-        $content['against'] = $against;
+        $content['for'] = ResponseModel::get_disc_responses('for', $disc_id);
+        $content['against'] = ResponseModel::get_disc_responses('against',
+            $disc_id);
 
         return view('discussion_view')->with('content', $content);
     }
@@ -77,11 +58,6 @@ class Discussion extends Controller
      */
     public function disc_sub_view()
     {
-        if(!Auth::check())
-        {
-            return Common::notice_msg('Not logged in!');
-        }
-
         return view('discussion_submit');
     }
 
@@ -92,11 +68,6 @@ class Discussion extends Controller
      */
     public function disc_sub_post(Request $request)
     {
-        if(!Auth::check())
-        {
-            return Common::notice_msg('Not logged in!');
-        }
-
         $captcha = Validator::make(Input::all(), array(
             'captcha' => 'required|captcha',));
 
@@ -146,25 +117,13 @@ class Discussion extends Controller
 
         $user_id = Auth::user()->id;
 
-        $pre_vote = VoteModel::select('opinion')
-            ->where('proposition', $disc_id)
-            ->where('phase', 'pre-argument')
-            ->where('user_id', $user_id)
-            ->get()
-            ->first();
+        $pre_vote = VoteModel::get_user_vote($disc_id,
+            $user_id, 'pre-argument');
 
-        $post_vote = VoteModel::select('opinion')
-            ->where('proposition', $disc_id)
-            ->where('phase', 'post-argument')
-            ->where('user_id', $user_id)
-            ->get()
-            ->first();
+        $post_vote = VoteModel::get_user_vote($disc_id,
+            $user_id, 'post-argument');
 
-        $response = ResponseModel::select('opinion')
-            ->where('proposition', $disc_id)
-            ->where('user_id', $user_id)
-            ->get()
-            ->first();
+        $response = ResponseModel::get_user_response($disc_id, $user_id);
 
         if($pre_vote)
         {

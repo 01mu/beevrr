@@ -51,6 +51,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'can-respond' => \beevrr\Http\Middleware\Custom\CheckCanRespond::class,
         'user-exists' => \beevrr\Http\Middleware\Custom\CheckUserExists::class,
         'can-vote' => \beevrr\Http\Middleware\Custom\CheckCanVote::class,
         'disc-exists' => \beevrr\Http\Middleware\Custom\CheckDiscussionExists::class,

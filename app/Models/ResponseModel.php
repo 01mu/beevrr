@@ -7,7 +7,7 @@
 namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use beevrr\Http\Controllers\Common;
 use Auth;
 
 class ResponseModel extends Model
@@ -35,5 +35,27 @@ class ResponseModel extends Model
         $discussion_insert->opinion = $opinion;
         $discussion_insert->date = $time;
         $discussion_insert->save();
+    }
+
+    public static function get_disc_responses($type, $disc_id)
+    {
+        $responses = ResponseModel::select('*')
+            ->where('proposition', $disc_id)
+            ->where('opinion', $type)
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        Common::fix_time($responses, 1);
+
+        return $responses;
+    }
+
+    public static function get_user_response($disc_id, $user_id)
+    {
+        return ResponseModel::select('opinion')
+            ->where('proposition', $disc_id)
+            ->where('user_id', $user_id)
+            ->get()
+            ->first();
     }
 }

@@ -35,4 +35,53 @@ class ActivityModel extends Model
         $activity_insert->date = $time;
         $activity_insert->save();
     }
+
+    public static function get_activities($user_id, $act, $bet, $off, $pag)
+    {
+        switch(count($bet))
+        {
+            case 2:
+                if($act)
+                {
+                    return ActivityModel::where('user_id', $user_id)
+                        ->whereBetween('action_type', [$bet[0], $bet[1]])
+                        ->where('is_active', 1)
+                        ->orderBy('date', 'DESC')
+                        ->skip($off)
+                        ->take($pag)
+                        ->get();
+                }
+
+                return ActivityModel::where('user_id', $user_id)
+                    ->whereBetween('action_type', [$bet[0], $bet[1]])
+                    ->orderBy('date', 'DESC')
+                    ->skip($off)
+                    ->take($pag)
+                    ->get();
+            case 1:
+                if($act)
+                {
+                    return ActivityModel::where('user_id', $user_id)
+                        ->where('action_type', $bet[0])
+                        ->where('is_active', 1)
+                        ->orderBy('date', 'DESC')
+                        ->skip($off)
+                        ->take($pag)
+                        ->get();
+                }
+
+                return ActivityModel::where('user_id', $user_id)
+                    ->where('action_type', $bet[0])
+                    ->orderBy('date', 'DESC')
+                    ->skip($off)
+                    ->take($pag)
+                    ->get();
+            default:
+                return ActivityModel::where('user_id', $user_id)
+                    ->orderBy('date', 'DESC')
+                    ->skip($off)
+                    ->take($pag)
+                    ->get();
+        }
+    }
 }

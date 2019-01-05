@@ -100,11 +100,6 @@ class DiscussionModel extends Model
         return $search_results;
     }
 
-    public static function check_exists($disc_id)
-    {
-        return DiscussionModel::select('id')->where('id', $disc_id)->get();
-    }
-
     public static function select_from($disc_id)
     {
         return DiscussionModel::select('*')

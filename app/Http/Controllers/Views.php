@@ -26,6 +26,7 @@ class Views extends Controller
     public function index($page = 0)
     {
         $pagination = config('global.pagination');
+
         $discussions = DiscussionModel::get_index($page, $pagination);
 
         if(Common::pagination_redirect($discussions, $page))
@@ -36,8 +37,10 @@ class Views extends Controller
         $content = Common::get_stats();
         $content['discussions'] = $discussions;
         $content['disc_count'] = count($discussions);
+
         $l = route('page', array( 'p' => $page - 1,));
         $r = route('page', array( 'p' => $page + 1,));
+
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
         return view('index')->with('content', $content);
@@ -80,16 +83,21 @@ class Views extends Controller
         }
 
         $pagination = config('global.pagination');
+
         $query = '%' . $request->q . '%';
+
         $result = DiscussionModel::search_results($query, $page, $pagination);
         $content = Common::get_stats();
         $content['search'] = $result;
+
         $l = route('search-post', array(
                 'q' => $request->q,
                 'p' => $page - 1,));
+
         $r = route('search-post', array(
                 'q' => $request->q,
                 'p' => $page + 1,));
+
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
         return view('search_view')->with('content', $content);

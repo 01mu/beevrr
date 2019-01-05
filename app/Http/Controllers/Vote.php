@@ -189,8 +189,8 @@ class Vote extends Controller
      *
      * args:    $disc_up = model for last post-argument update
      *          $disc_id = id of discussion
-     *          $pvfv = post-voting for percentage
-     *          $pvag = post-voting against percentage
+     *          $pvfp = post-voting for percentage
+     *          $pvap = post-voting against percentage
      * returns: none
      */
     private function update_changes($disc_up, $disc_id, $pvfp, $pvap)

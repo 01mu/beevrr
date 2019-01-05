@@ -5,9 +5,11 @@
  */
 
 namespace beevrr\Http\Middleware\Custom;
+
+use beevrr\Http\Controllers\Common;
+
 use Closure;
 use User;
-use beevrr\Http\Controllers\Common;
 
 class CheckUserExists
 {

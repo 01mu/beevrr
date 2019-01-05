@@ -28,11 +28,6 @@ class Response extends Controller
      */
     public function resp_view($disc_id)
     {
-        if(!Common::check_exists($disc_id))
-        {
-            return Common::notice_msg('Invalid ID!');
-        }
-
         if(!Common::check_can_reply($disc_id))
         {
             return Common::notice_msg('Cannot respond!');
@@ -49,11 +44,6 @@ class Response extends Controller
      */
     public function resp_post($disc_id, Request $request)
     {
-        if(!Common::check_exists($disc_id))
-        {
-            return Common::notice_msg('Invalid ID!');
-        }
-
         if(!Common::check_can_reply($disc_id))
         {
             return Common::notice_msg('Cannot respond!');

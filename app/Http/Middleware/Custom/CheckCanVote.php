@@ -5,22 +5,17 @@
  */
 
 namespace beevrr\Http\Middleware\Custom;
+
 use beevrr\Http\Controllers\Common;
+
 use Closure;
 use Auth;
 
 class CheckCanVote
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
     public function handle($request, Closure $next)
     {
-        if(!Common::check_can_vote($request->id, $request->phase))
+        if(!$this->check_can_vote($request->id, $request->phase))
         {
             return Common::notice_msg('Cannot vote!');
         }
@@ -28,8 +23,13 @@ class CheckCanVote
         return $next($request);
     }
 
-    private static function check_can_vote($disc_id, $phase)
+    public static function check_can_vote($disc_id, $phase)
     {
+        if(!Auth::check())
+        {
+            return 0;
+        }
+
         $can_vote = 1;
         $user_id = Auth::user()->id;
 

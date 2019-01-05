@@ -28,4 +28,14 @@ class VoteModel extends Model
         $vote_insert->date = $time;
         $vote_insert->save();
     }
+
+    public static function get_user_vote($disc_id, $user_id, $type)
+    {
+        return VoteModel::select('opinion')
+            ->where('proposition', $disc_id)
+            ->where('phase', $type)
+            ->where('user_id', $user_id)
+            ->get()
+            ->first();
+    }
 }

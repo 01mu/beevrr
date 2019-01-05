@@ -102,92 +102,6 @@ class Common extends Controller
         }
     }
 
-    /* check whether a user can reply to the discussion given their voting or
-     * response history
-     *
-     * args:    $disc_id = discussion id
-     * returns: whether the user can reply
-     */
-    public static function check_can_reply($disc_id)
-    {
-        if(!Auth::check())
-        {
-            return 0;
-        }
-
-        $can_reply = 1;
-        $user_id = Auth::user()->id;
-
-        $same = Common::same_as_poster($disc_id, $user_id);
-        $has_vote = Common::has_voted($disc_id, $user_id);
-        $has_resp = Common::has_responded($disc_id, $user_id);
-
-        $is_arg_phase = DiscussionModel::select('current_phase')
-            ->where('id', $disc_id)
-            ->get()[0]->current_phase === 'argument';
-
-        if($same || $has_resp || $has_vote || !$is_arg_phase)
-        {
-            $can_reply = 0;
-        }
-
-        return $can_reply;
-    }
-
-    /* check whether a user can vote given the status of the discussion and
-     * their voting history
-     *
-     * args:    $disc_id = discussion id
-     *          $phase = current phase of the discussion
-     * returns: whether the user can vote
-     */
-    public static function check_can_vote($disc_id, $phase)
-    {
-        if(!Auth::check())
-        {
-            //return 0;
-        }
-
-        $can_vote = 1;
-        $user_id = Auth::user()->id;
-
-        $same = Common::same_as_poster($disc_id, $user_id);
-        $has_resp = Common::has_responded($disc_id, $user_id);
-        $not_pre = $phase !== 'pre-argument';
-        $not_post = $phase !== 'post-argument';
-
-        if($phase === 'post-argument')
-        {
-            $cant_vote = 1;
-
-            if(Common::check_voted($disc_id, $user_id, 'pre-argument'))
-            {
-                $cant_vote = 0;
-            }
-
-            if(Common::check_voted($disc_id, $user_id, 'post-argument'))
-            {
-                $cant_vote = 1;
-            }
-        }
-        else
-        {
-            $cant_vote = 0;
-
-            if(Common::check_voted($disc_id, $user_id, 'pre-argument'))
-            {
-                $cant_vote = 1;
-            }
-        }
-
-        if($same || $has_resp || $cant_vote || ($not_pre && $not_post))
-        {
-            $can_vote = 0;
-        }
-
-        return $can_vote;
-    }
-
     /* if the discussion poster has the same id as the viewing user
      *
      * args:    $disc_id = id of discussion
@@ -244,23 +158,6 @@ class Common extends Controller
             ->where('user_id', $user_id)
             ->where('phase', $phase)
             ->get());
-    }
-
-    /* check if a discussions exists
-     *
-     * args:    $disc_id = discussion id
-     * returns: if exists
-     */
-    public static function check_exists($disc_id)
-    {
-        $exists = 0;
-
-        if(count(DiscussionModel::select('id')->where('id', $disc_id)->get()))
-        {
-            $exists = 1;
-        }
-
-        return $exists;
     }
 
     /* flash notice message for notice view and perform redirect
@@ -339,26 +236,5 @@ class Common extends Controller
         }
 
         return $string ? implode(', ', $string) . ' ago' : 'just now';
-    }
-
-    /* insert new activity when a user does something (vote, respond, or post
-     * a discussion)
-     *
-     * args:    $user_id = id of user
-     *          $user_name = name of user
-     *          $type = type of activity (see "activities" migration)
-     *          $prop = proposition id
-     *          $time = time of input
-     * returns: none
-     */
-    public static function activity($user_id, $user_name, $type, $prop, $time)
-    {
-        $activity_insert = new ActivityModel;
-        $activity_insert->user_id = $user_id;
-        $activity_insert->user_name = $user_name;
-        $activity_insert->action_type = $type;
-        $activity_insert->proposition = $prop;
-        $activity_insert->date = $time;
-        $activity_insert->save();
     }
 }

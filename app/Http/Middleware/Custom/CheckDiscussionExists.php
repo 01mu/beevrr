@@ -5,15 +5,17 @@
  */
 
 namespace beevrr\Http\Middleware\Custom;
-use Closure;
+
 use beevrr\Models\DiscussionModel;
 use beevrr\Http\Controllers\Common;
+
+use Closure;
 
 class CheckDiscussionExists
 {
     public function handle($request, Closure $next)
     {
-        $exists = count(DiscussionModel::check_exists($request->id));
+        $exists = count(DiscussionModel::select_from($request->id));
 
         if($exists === 0)
         {
