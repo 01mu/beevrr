@@ -31,21 +31,19 @@ class Discussion extends Controller
      */
     public function disc_view($disc_id)
     {
-        $discussion = DiscussionModel::select_from($disc_id)[0];
+        $discussion = DiscussionModel::select_from($disc_id);
         $phase = $discussion->current_phase;
 
-        $discussion->post_date = Common::tm($discussion->post_date);
         $this->add_change_symbol($discussion);
 
         $content = Common::get_stats();
+        $content['discussion'] = $discussion;
         $content['next_phase'] = $this->get_changing_message($discussion);
         $content['action'] = $this->get_user_action($disc_id);
         $content['can_reply'] = CheckCanRespond::check_can_respond($disc_id);
         $content['can_vote'] = CheckCanVote::check_can_vote($disc_id, $phase);
-        $content['discussion'] = $discussion;
-        $content['for'] = ResponseModel::get_disc_responses('for', $disc_id);
-        $content['against'] = ResponseModel::get_disc_responses('against',
-            $disc_id);
+        $content['f'] = ResponseModel::disc_responses('for', $disc_id);
+        $content['a'] = ResponseModel::disc_responses('against', $disc_id);
 
         return view('discussion_view')->with('content', $content);
     }
@@ -117,13 +115,9 @@ class Discussion extends Controller
 
         $user_id = Auth::user()->id;
 
-        $pre_vote = VoteModel::get_user_vote($disc_id,
-            $user_id, 'pre-argument');
-
-        $post_vote = VoteModel::get_user_vote($disc_id,
-            $user_id, 'post-argument');
-
-        $response = ResponseModel::get_user_response($disc_id, $user_id);
+        $pre_vote = VoteModel::user_vote($disc_id, $user_id, 'pre-argument');
+        $post_vote = VoteModel::user_vote($disc_id, $user_id, 'post-argument');
+        $response = ResponseModel::user_response($disc_id, $user_id);
 
         if($pre_vote)
         {
@@ -217,22 +211,6 @@ class Discussion extends Controller
         }
 
         return $time;
-    }
-
-    /* check if the discussion is valid
-     *
-     * args:    $disc_id = id of discussion
-     * returns: if not valid: 0
-     *          if valid: discussion array
-     */
-    private function check_valid_disc($disc_id)
-    {
-        if($select = DiscussionModel::select('*')->where('id', $disc_id)->get())
-        {
-            return $select;
-        }
-
-        return 0;
     }
 
     /* prepare for or against change for display

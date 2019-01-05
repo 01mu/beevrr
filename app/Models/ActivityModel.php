@@ -36,6 +36,15 @@ class ActivityModel extends Model
         $activity_insert->save();
     }
 
+    /* get activity for user info page
+     *
+     * args:    $user_id = id of user
+     *          $act = activity type
+     *          $bet = bounds for activity type (see activity migration)
+     *          $off = offset
+     *          $pag = pagination
+     * returns: none
+     */
     public static function get_activities($user_id, $act, $bet, $off, $pag)
     {
         switch(count($bet))

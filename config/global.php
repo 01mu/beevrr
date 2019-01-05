@@ -6,4 +6,4 @@
 
 return [    'pagination' => 10,
             'an_hour' => 1,
-            'use_https' => 1,];
+            'use_https' => 0,];

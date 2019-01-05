@@ -15,9 +15,7 @@ class CheckDiscussionExists
 {
     public function handle($request, Closure $next)
     {
-        $exists = count(DiscussionModel::select_from($request->id));
-
-        if($exists === 0)
+        if(!DiscussionModel::select_from($request->id))
         {
             return Common::notice_msg('Invalid ID!');
         }

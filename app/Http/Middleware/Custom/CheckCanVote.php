@@ -23,6 +23,12 @@ class CheckCanVote
         return $next($request);
     }
 
+    /* check if a user can vote on a discussion
+     *
+     * args:    $disc_id = discussion id
+     *          $phase = discussion's current phase
+     * returns: whether the user can vote
+     */
     public static function check_can_vote($disc_id, $phase)
     {
         if(!Auth::check())
@@ -40,29 +46,29 @@ class CheckCanVote
 
         if($phase === 'post-argument')
         {
-            $cant_vote = 1;
+            $right_phase = 1;
 
             if(Common::check_voted($disc_id, $user_id, 'pre-argument'))
             {
-                $cant_vote = 0;
+                $right_phase = 0;
             }
 
             if(Common::check_voted($disc_id, $user_id, 'post-argument'))
             {
-                $cant_vote = 1;
+                $right_phase = 1;
             }
         }
         else
         {
-            $cant_vote = 0;
+            $right_phase = 0;
 
             if(Common::check_voted($disc_id, $user_id, 'pre-argument'))
             {
-                $cant_vote = 1;
+                $right_phase = 1;
             }
         }
 
-        if($same || $has_resp || $cant_vote || ($not_pre && $not_post))
+        if($same || $has_resp || $right_phase || ($not_pre && $not_post))
         {
             $can_vote = 0;
         }

@@ -110,10 +110,7 @@ class Common extends Controller
      */
     public static function same_as_poster($disc_id, $user_id)
     {
-        return count(DiscussionModel::select('id')
-            ->where('id', $disc_id)
-            ->where('user_id', $user_id)
-            ->get());
+        return DiscussionModel::same_poster($disc_id, $user_id);
     }
 
     /* check if a user voted on a discussion
@@ -124,10 +121,7 @@ class Common extends Controller
      */
     public static function has_voted($disc_id, $user_id)
     {
-        return count(VoteModel::select('id')
-            ->where('proposition', $disc_id)
-            ->where('user_id', $user_id)
-            ->get());
+        return VoteModel::check_voted($disc_id, $user_id);
     }
 
     /* check if a user responded to a discussion
@@ -138,10 +132,7 @@ class Common extends Controller
      */
     public static function has_responded($disc_id, $user_id)
     {
-        return count(ResponseModel::select('id')
-            ->where('proposition', $disc_id)
-            ->where('user_id', $user_id)
-            ->get());
+        return ResponseModel::user_response($disc_id, $user_id);
     }
 
     /* check if a user voted on a discussion (phase specific)
@@ -153,11 +144,7 @@ class Common extends Controller
      */
     public static function check_voted($disc_id, $user_id, $phase)
     {
-        return count(VoteModel::select('id')
-            ->where('proposition', $disc_id)
-            ->where('user_id', $user_id)
-            ->where('phase', $phase)
-            ->get());
+        return VoteModel::user_vote($disc_id, $user_id, $phase);
     }
 
     /* flash notice message for notice view and perform redirect

@@ -7,7 +7,9 @@
 namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use beevrr\Http\Controllers\Common;
+
 use Auth;
 
 class ResponseModel extends Model
@@ -37,7 +39,13 @@ class ResponseModel extends Model
         $discussion_insert->save();
     }
 
-    public static function get_disc_responses($type, $disc_id)
+    /* get for or against responses for a discussion and fix times
+     *
+     * args:    $type = for or against
+     *          $disc_id = discussion id
+     * returns: none
+     */
+    public static function disc_responses($type, $disc_id)
     {
         $responses = ResponseModel::select('*')
             ->where('proposition', $disc_id)
@@ -50,7 +58,13 @@ class ResponseModel extends Model
         return $responses;
     }
 
-    public static function get_user_response($disc_id, $user_id)
+    /* select user's response to a discussion
+     *
+     * args:    $disc_id = discussion id
+     *          $user_id = user id
+     * returns: none
+     */
+    public static function user_response($disc_id, $user_id)
     {
         return ResponseModel::select('opinion')
             ->where('proposition', $disc_id)

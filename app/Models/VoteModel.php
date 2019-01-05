@@ -29,11 +29,20 @@ class VoteModel extends Model
         $vote_insert->save();
     }
 
-    public static function get_user_vote($disc_id, $user_id, $type)
+    public static function user_vote($disc_id, $user_id, $phase)
     {
         return VoteModel::select('opinion')
             ->where('proposition', $disc_id)
-            ->where('phase', $type)
+            ->where('phase', $phase)
+            ->where('user_id', $user_id)
+            ->get()
+            ->first();
+    }
+
+    public static function check_voted($disc_id, $user_id)
+    {
+        return VoteModel::select('id')
+            ->where('proposition', $disc_id)
             ->where('user_id', $user_id)
             ->get()
             ->first();

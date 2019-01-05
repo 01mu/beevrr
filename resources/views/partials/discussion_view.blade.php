@@ -28,8 +28,8 @@
 <hr>
 <div class="flex">
     <div class="wrapper50rm">
-        @if(count($content['for']) > 0)
-            @foreach($content['for'] as $post)
+        @if(count($content['f']) > 0)
+            @foreach($content['f'] as $post)
                 <div class="boxb">
                     {!! nl2br($post->response) !!}
                     <div style="margin-bottom:5px;"></div>
@@ -49,8 +49,8 @@
         @endif
     </div>
     <div class="wrapper50lm">
-        @if(count($content['against']) > 0)
-            @foreach($content['against'] as $post)
+        @if(count($content['a']) > 0)
+            @foreach($content['a'] as $post)
                 <div class="boxr">
                     {!! nl2br($post->response) !!}
                     <div style="margin-bottom:5px;"></div>

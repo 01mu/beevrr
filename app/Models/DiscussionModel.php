@@ -7,8 +7,10 @@
 namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use beevrr\Models\ActivityModel;
 use beevrr\Http\Controllers\Common;
+
 use Auth;
 
 class DiscussionModel extends Model
@@ -74,6 +76,12 @@ class DiscussionModel extends Model
         $discussion_update->save();
     }
 
+    /* get index page with discussions
+     *
+     * args:    $page = limit
+     *          $pagination  = pagination
+     * returns: none
+     */
     public static function get_index($page, $pagination)
     {
         $discussions = DiscussionModel::orderBy('recent_action', 'DESC')
@@ -86,6 +94,13 @@ class DiscussionModel extends Model
         return $discussions;
     }
 
+    /* return search results and fix time
+     *
+     * args:    $query = search query
+     *          $page = limit
+     *          $pagination = pagination
+     * returns: none
+     */
     public static function search_results($query, $page, $pagination)
     {
         $search_results = DiscussionModel::orderBy('recent_action', 'DESC')
@@ -100,10 +115,37 @@ class DiscussionModel extends Model
         return $search_results;
     }
 
+    /* select discussion based on id and fix its time
+     *
+     * args:    $disc_id = discussion id
+     * returns: none
+     */
     public static function select_from($disc_id)
     {
-        return DiscussionModel::select('*')
+        $discussion = DiscussionModel::select('*')
             ->where('id', $disc_id)
+            ->get()
+            ->first();
+
+        if($discussion)
+        {
+            $discussion->post_date = Common::tm($discussion->post_date);
+        }
+
+        return $discussion;
+    }
+
+    /* check if the logged in user posted the discussion being viewed
+     *
+     * args:    $disc_id = discussion id
+     *          $user_id = user id
+     * returns: none
+     */
+    public static function same_poster($disc_id, $user_id)
+    {
+        return DiscussionModel::select('id')
+            ->where('id', $disc_id)
+            ->where('user_id', $user_id)
             ->get();
     }
 }

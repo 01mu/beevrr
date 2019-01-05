@@ -28,11 +28,6 @@ class Response extends Controller
      */
     public function resp_view($disc_id)
     {
-        if(!Common::check_can_reply($disc_id))
-        {
-            return Common::notice_msg('Cannot respond!');
-        }
-
         return view('reply_submit')->with('id', $disc_id);
     }
 
@@ -44,11 +39,6 @@ class Response extends Controller
      */
     public function resp_post($disc_id, Request $request)
     {
-        if(!Common::check_can_reply($disc_id))
-        {
-            return Common::notice_msg('Cannot respond!');
-        }
-
         $captcha = Validator::make(Input::all(), array(
             'captcha' => 'required|captcha',));
 
