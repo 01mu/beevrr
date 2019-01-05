@@ -148,6 +148,8 @@ class Vote extends Controller
                     break;
             }
 
+            $disc_up->save();
+
             $for_per = $disc_up->pa_for / $disc_up->pa_vote_count * 100;
             $aga_per = $disc_up->pa_against / $disc_up->pa_vote_count * 100;
             $und_per = $disc_up->pa_undecided / $disc_up->pa_vote_count * 100;
@@ -172,6 +174,8 @@ class Vote extends Controller
                     $disc_up->pv_against += 1;
                     break;
             }
+
+            $disc_up->save();
 
             $pvfp = $disc_up->pv_for / $disc_up->pv_vote_count * 100;
             $pvap = $disc_up->pv_against / $disc_up->pv_vote_count * 100;

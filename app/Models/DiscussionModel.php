@@ -146,6 +146,7 @@ class DiscussionModel extends Model
         return DiscussionModel::select('id')
             ->where('id', $disc_id)
             ->where('user_id', $user_id)
-            ->get();
+            ->get()
+            ->first();
     }
 }

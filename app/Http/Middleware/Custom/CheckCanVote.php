@@ -41,6 +41,7 @@ class CheckCanVote
 
         $same = Common::same_as_poster($disc_id, $user_id);
         $has_resp = Common::has_responded($disc_id, $user_id);
+
         $not_pre = $phase !== 'pre-argument';
         $not_post = $phase !== 'post-argument';
 

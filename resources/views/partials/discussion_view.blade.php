@@ -6,7 +6,7 @@
 
 <b>{{ $content['discussion']->proposition }}</b>
 <hr>
-<div class="box">
+<div class="boxarg">
     {!! nl2br($content['discussion']->argument) !!}
     <div style="margin-bottom:5px;"></div>
     <div class="small">

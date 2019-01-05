@@ -44,7 +44,7 @@ class CheckCanRespond
         $has_resp = Common::has_responded($disc_id, $user_id);
 
         $disc = DiscussionModel::select_from($disc_id);
-        $is_arg_phase =  $disc->current_phase === 'argument';
+        $is_arg_phase = $disc->current_phase === 'argument';
 
         if($same || $has_resp || $has_vote || !$is_arg_phase)
         {

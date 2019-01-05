@@ -36,8 +36,10 @@ class LoginController extends Controller
             return redirect('notice');
         }
 
-        if(Auth::attempt(['user_name' => $request->user_name,
-            'password' => $request->password]))
+        $auth = ['user_name' => $request->user_name,
+            'password' => $request->password];
+
+        if(Auth::attempt($auth))
         {
             return $this->sendLoginResponse($request);
         }
