@@ -30,17 +30,7 @@
     <div class="wrapper50rm">
         @if(count($content['f']) > 0)
             @foreach($content['f'] as $post)
-                <div class="boxb">
-                    {!! nl2br($post->response) !!}
-                    <div style="margin-bottom:5px;"></div>
-                    <div class="small">
-                        by <a href="{{ route('user-view',
-                            array('id' => $post->user_id)) }}">
-                            {{ $post->user_name }}</a>
-                            {{ $post->date }}
-                    </div>
-                </div>
-                <div style="margin-bottom:10px;"></div>
+                @include('partials/sub/discussion_view', array('box' => 'boxb'))
             @endforeach
         @else
             <div class="boxb">
@@ -51,17 +41,7 @@
     <div class="wrapper50lm">
         @if(count($content['a']) > 0)
             @foreach($content['a'] as $post)
-                <div class="boxr">
-                    {!! nl2br($post->response) !!}
-                    <div style="margin-bottom:5px;"></div>
-                    <div class="small">
-                        by <a href="{{ route('user-view',
-                            array('id' => $post->user_id)) }}">
-                            {{ $post->user_name }}</a>
-                            {{ $post->date }}
-                    </div>
-                </div>
-                <div style="margin-bottom:10px;"></div>
+                @include('partials/sub/discussion_view', array('box' => 'boxr'))
             @endforeach
         @else
             <div class="boxr">

@@ -8,25 +8,22 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Responses extends Migration
+class LikesResp extends Migration
 {
     public function up()
     {
-        Schema::create('responses', function (Blueprint $table)
+        Schema::create('likes_resp', function (Blueprint $table)
         {
             $table->increments('id');
-            $table->longText('response');
-            $table->integer('proposition');
             $table->integer('user_id');
             $table->string('user_name');
-            $table->string('opinion');
+            $table->integer('response');
             $table->integer('date');
-            $table->integer('score')->default(0);
         });
     }
 
     public function down()
     {
-        Schema::drop('responses');
+        Schema::drop('likes_resp');
     }
 }

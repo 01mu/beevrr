@@ -28,6 +28,7 @@ class Discussions extends Migration
             $table->integer('vote_count')->default(0);
             $table->integer('pa_vote_count')->default(0);
             $table->integer('pv_vote_count')->default(0);
+            $table->integer('score')->default(0);
 
             /*  info */
             $table->integer('recent_action');
