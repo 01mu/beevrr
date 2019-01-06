@@ -16,6 +16,7 @@ use beevrr\Models\DiscussionModel;
 use beevrr\Models\ResponseModel;
 use beevrr\Models\ActivityModel;
 use beevrr\Models\VoteModel;
+use beevrr\Models\LikesDiscModel;
 use beevrr\User;
 
 use Validator;
@@ -44,6 +45,7 @@ class Discussion extends Controller
         $content['can_vote'] = CheckCanVote::check_can_vote($disc_id, $phase);
         $content['f'] = ResponseModel::disc_responses('for', $disc_id);
         $content['a'] = ResponseModel::disc_responses('against', $disc_id);
+        $content['liked'] = $this->get_like_text($disc_id);
 
         return view('discussion_view')->with('content', $content);
     }
@@ -228,6 +230,49 @@ class Discussion extends Controller
         if($discussion->against_change > 0)
         {
             $discussion->against_change = '+' . $discussion->against_change;
+        }
+    }
+
+    /* toggle like for discussion
+     *
+     * args:    $disc_id = discussion id
+     * returns: notice
+     */
+    public function disc_like($disc_id)
+    {
+        if(LikesDiscModel::check_liked($disc_id))
+        {
+            DiscussionModel::make_like($disc_id, 0);
+            LikesDiscModel::remove_like($disc_id);
+        }
+        else
+        {
+            DiscussionModel::make_like($disc_id, 1);
+            LikesDiscModel::insert_like($disc_id);
+        }
+
+        return Common::notice_msg('Discussion liked!');
+    }
+
+    /* prepare message for display based on like
+     *
+     * args:    $disc_id = discussion id
+     * returns: "liked" string
+     */
+    private function get_like_text($disc_id)
+    {
+        if(!Auth::check())
+        {
+            return '';
+        }
+
+        if(LikesDiscModel::check_liked($disc_id))
+        {
+            return '[unlike]';
+        }
+        else
+        {
+            return '[like]';
         }
     }
 }

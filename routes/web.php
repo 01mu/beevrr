@@ -41,12 +41,26 @@ Route::group(['middleware' => ['log']], function ()
         ->name('disc-sub-post');
 });
 
+Route::group(['middleware' => ['log', 'disc', 'throttle:3,1']], function ()
+{
+    Route::get('disc_like/{id}', 'Discussion@disc_like')
+        ->name('disc-like');
+});
+
+Route::group(['middleware' => ['log', 'resp-e', 'throttle:5,1']], function ()
+{
+    Route::get('resp_like/{id}', 'Response@resp_like')
+        ->name('resp-like');
+});
+
 Route::group(['middleware' => ['log', 'disc', 'resp']], function ()
 {
     Route::get('resp_submit/{id}', 'Response@resp_view')
         ->name('resp-view');
     Route::post('resp_submit/{id}', 'Response@resp_post')
         ->name('resp-post');
+    Route::post('resp_like/{id}', 'Response@resp_like')
+        ->name('resp-like');
 });
 
 Route::group(['middleware' => ['log', 'disc', 'vote']], function ()

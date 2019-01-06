@@ -5,9 +5,18 @@
         by <a href="{{ route('user-view',
             array('id' => $post->user_id)) }}">
             {{ $post->user_name }}</a>
-            {{ $post->date }}
-        <span style="float: right;">
-            <a href="{{ route('search-view') }}">[like]</a>
-        </span>
+            {{ $post->date }} |
+            <span
+            id="{{ $post->id }}score">
+            {{ $post->score }}
+            </span> likes
+            @guest
+
+            @else
+            <span style="cursor: pointer; float: right;">
+                <a id="{{ $post->id }}text"
+                onclick="like_resp({{ $post->id }})">{{ $post->liked }}</a>
+            </span>
+            @endguest
     </div>
 </div>

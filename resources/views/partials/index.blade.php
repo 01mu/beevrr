@@ -27,6 +27,7 @@
                 ['id' => $content['discussions'][$i]->user_id]) }}">
                 {{ $content['discussions'][$i]->user_name }}</a>
             {{ $content['discussions'][$i]->post_date }}
+            | {{ $content['discussions'][$i]->score }} likes
             | {{ $content['discussions'][$i]->reply_count }} responses
             | {{ $content['discussions'][$i]->vote_count }} votes
             | {{ $content['discussions'][$i]->current_phase }}

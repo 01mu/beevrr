@@ -66,6 +66,8 @@ class Kernel extends HttpKernel
         'disc' => \beevrr\Http\Middleware\Custom\CheckDiscussionExists::class,
         /* check if the user is logged in */
         'log' => \beevrr\Http\Middleware\Custom\CheckLoggedIn::class,
+        /* check if a response exists */
+        'resp-e' => \beevrr\Http\Middleware\Custom\CheckResponseExists::class,
 
         'auth' => \beevrr\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,

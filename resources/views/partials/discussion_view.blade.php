@@ -13,7 +13,19 @@
         by <a href="{{ route('user-view',
             array('id' => $content['discussion']->user_id)) }}">
             {{ $content['discussion']->user_name }}</a>
-            {{ $content['discussion']->post_date }}
+            {{ $content['discussion']->post_date }} |
+            <span
+            id="{{ $content['discussion']->id }}score">
+            {{ $content['discussion']->score }}
+            </span> likes
+            @guest
+
+            @else
+            <span style="cursor: pointer; float: right;">
+                <a id="{{ $content['discussion']->id }}text"
+                onclick="like_disc({{ $content['discussion']->id }})">{{ $content['liked'] }}</a>
+            </span>
+            @endguest
     </div>
 </div>
 <hr>
@@ -122,3 +134,48 @@
 
 @endif
 
+<script>
+    function like_disc(id)
+    {
+        var xhttp = new XMLHttpRequest();
+
+        xhttp.open("GET", "/disc_like/" + id, true);
+        xhttp.send();
+
+        var txt = document.getElementById(id + 'text').innerHTML;
+        var c = parseInt(document.getElementById(id + 'score').innerHTML);
+
+        if(txt === '[like]')
+        {
+            document.getElementById(id + 'score').innerHTML = c + 1;
+            document.getElementById(id + 'text').innerHTML = '[unlike]';
+        }
+        else
+        {
+            document.getElementById(id + 'score').innerHTML = c - 1;
+            document.getElementById(id + 'text').innerHTML = '[like]';
+        }
+    }
+
+    function like_resp(id)
+    {
+        var xhttp = new XMLHttpRequest();
+
+        xhttp.open("GET", "/resp_like/" + id, true);
+        xhttp.send();
+
+        var txt = document.getElementById(id + 'text').innerHTML;
+        var c = parseInt(document.getElementById(id + 'score').innerHTML);
+
+        if(txt === '[like]')
+        {
+            document.getElementById(id + 'score').innerHTML = c + 1;
+            document.getElementById(id + 'text').innerHTML = '[unlike]';
+        }
+        else
+        {
+            document.getElementById(id + 'score').innerHTML = c - 1;
+            document.getElementById(id + 'text').innerHTML = '[like]';
+        }
+    }
+</script>

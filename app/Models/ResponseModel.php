@@ -8,6 +8,7 @@ namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use beevrr\Http\Controllers\Response;
 use beevrr\Http\Controllers\Common;
 
 use Auth;
@@ -50,10 +51,17 @@ class ResponseModel extends Model
         $responses = ResponseModel::select('*')
             ->where('proposition', $disc_id)
             ->where('opinion', $type)
-            ->orderBy('date', 'ASC')
+            ->orderBy('score', 'DESC')
             ->get();
 
         Common::fix_time($responses, 1);
+
+        for($i = 0; $i < count($responses); $i++)
+        {
+            $res = $responses[$i];
+
+            $res['liked'] = Response::get_like_text($res->id);
+        }
 
         return $responses;
     }
@@ -71,5 +79,43 @@ class ResponseModel extends Model
             ->where('user_id', $user_id)
             ->get()
             ->first();
+    }
+
+    /* increment or decrement like count for response
+     *
+     * args:    $disc_id = discussion id
+     *          $type = decrement or incrememnt
+     * returns: none
+     */
+    public static function make_like($resp_id, $type)
+    {
+        $up = ResponseModel::find($resp_id);
+
+        switch($type)
+        {
+            case 0:
+                $up->score -= 1;
+                break;
+            default:
+                $up->score += 1;
+                break;
+        }
+
+        $up->save();
+    }
+
+    /* select based on response id
+     *
+     * args:    $resp_id = response id
+     * return:  selected response
+     */
+    public static function select_from($resp_id)
+    {
+        $resp = ResponseModel::select('*')
+            ->where('id', $resp_id)
+            ->get()
+            ->first();
+
+        return $resp;
     }
 }

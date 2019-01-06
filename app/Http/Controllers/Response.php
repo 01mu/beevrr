@@ -13,6 +13,7 @@ use beevrr\Http\Controllers\Common;
 use beevrr\Models\ResponseModel;
 use beevrr\Models\DiscussionModel;
 use beevrr\Models\ActivityModel;
+use beevrr\Models\LikesRespModel;
 use beevrr\User;
 
 use Validator;
@@ -87,5 +88,48 @@ class Response extends Controller
         }
 
         return $tp;
+    }
+
+    /* toggle like for response
+     *
+     * args:    $resp_id = response id
+     * returns: notice
+     */
+    public function resp_like($resp_id)
+    {
+        if(LikesRespModel::check_liked($resp_id))
+        {
+            ResponseModel::make_like($resp_id, 0);
+            LikesRespModel::remove_like($resp_id);
+        }
+        else
+        {
+            ResponseModel::make_like($resp_id, 1);
+            LikesRespModel::insert_like($resp_id);
+        }
+
+        return Common::notice_msg('Response liked!');
+    }
+
+    /* prepare message for display based on like
+     *
+     * args:    $resp_id = response id
+     * returns: "liked" string
+     */
+    public static function get_like_text($resp_id)
+    {
+        if(!Auth::check())
+        {
+            return '';
+        }
+
+        if(LikesRespModel::check_liked($resp_id))
+        {
+            return '[unlike]';
+        }
+        else
+        {
+            return '[like]';
+        }
     }
 }

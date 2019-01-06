@@ -7,7 +7,7 @@
 namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use beevrr\Models\LikesDiscModel;
 use beevrr\Models\ActivityModel;
 use beevrr\Http\Controllers\Common;
 
@@ -148,5 +148,28 @@ class DiscussionModel extends Model
             ->where('user_id', $user_id)
             ->get()
             ->first();
+    }
+
+    /* increment or decrement like count for discussion
+     *
+     * args:    $disc_id = discussion id
+     *          $type = inc or dec
+     * returns: none
+     */
+    public static function make_like($disc_id, $type)
+    {
+        $up = DiscussionModel::find($disc_id);
+
+        switch($type)
+        {
+            case 0:
+                $up->score -= 1;
+                break;
+            default:
+                $up->score += 1;
+                break;
+        }
+
+        $up->save();
     }
 }
