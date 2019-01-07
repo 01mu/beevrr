@@ -3,7 +3,6 @@
     github.com/01mu
 -->
 
-
 <b>{{ $content['discussion']->proposition }}</b>
 <hr>
 <div class="boxarg">
@@ -12,20 +11,20 @@
     <div class="small">
         by <a href="{{ route('user-view',
             array('id' => $content['discussion']->user_id)) }}">
-            {{ $content['discussion']->user_name }}</a>
-            {{ $content['discussion']->post_date }} |
-            <span
-            id="{{ $content['discussion']->id }}score">
-            {{ $content['discussion']->score }}
-            </span> likes
-            @guest
+            {{ $content['discussion']->user_name }}
+        </a>
+        {{ $content['discussion']->post_date }} |
+        <span id="{{ $content['discussion']->id }}score"
+            >{{ $content['discussion']->score }}</span> likes
+        @guest
 
-            @else
-            <span style="cursor: pointer; float: right;">
-                <a id="{{ $content['discussion']->id }}text"
-                onclick="like_disc({{ $content['discussion']->id }})">{{ $content['liked'] }}</a>
-            </span>
-            @endguest
+        @else
+        <span style="cursor: pointer; float: right;">
+            <a id="{{ $content['discussion']->id }}text"
+            onclick="like({{ $content['discussion']->id }}, 0)"
+            >{{ $content['liked'] }}</a>
+        </span>
+        @endguest
     </div>
 </div>
 <hr>
@@ -112,70 +111,49 @@
 @if($content['can_vote'])
     <hr>
     <a class="button" href="{{ route('vote-view',
-            array('phase' => $content['discussion']->current_phase,
-            'id' => $content['discussion']->id)) }}">
-            submit {{ $content['discussion']->current_phase }} vote</a>
-@else
-
+        array('phase' => $content['discussion']->current_phase,
+        'id' => $content['discussion']->id)) }}">
+        submit {{ $content['discussion']->current_phase }} vote
+    </a>
 @endif
 
 @if($content['can_reply'])
     <hr>
     <a class="button" href="{{ route('resp-view',
-            array('id' => $content['discussion']->id)) }}">submit response</a>
-@else
-
+        array('id' => $content['discussion']->id)) }}">submit response
+    </a>
 @endif
 
 @if(count($content['action']) > 0)
     <hr>
     {{ $content['action']['did'] }}<b>{{ $content['action']['res'] }}</b>
-@else
-
 @endif
 
 <script>
-    function like_disc(id)
-    {
+    function like(id, type) {
         var xhttp = new XMLHttpRequest();
 
-        xhttp.open("GET", "/disc_like/" + id, true);
-        xhttp.send();
-
-        var txt = document.getElementById(id + 'text').innerHTML;
         var c = parseInt(document.getElementById(id + 'score').innerHTML);
-
-        if(txt === '[like]')
-        {
-            document.getElementById(id + 'score').innerHTML = c + 1;
-            document.getElementById(id + 'text').innerHTML = '[unlike]';
-        }
-        else
-        {
-            document.getElementById(id + 'score').innerHTML = c - 1;
-            document.getElementById(id + 'text').innerHTML = '[like]';
-        }
-    }
-
-    function like_resp(id)
-    {
-        var xhttp = new XMLHttpRequest();
-
-        xhttp.open("GET", "/resp_like/" + id, true);
-        xhttp.send();
-
         var txt = document.getElementById(id + 'text').innerHTML;
-        var c = parseInt(document.getElementById(id + 'score').innerHTML);
 
-        if(txt === '[like]')
-        {
-            document.getElementById(id + 'score').innerHTML = c + 1;
-            document.getElementById(id + 'text').innerHTML = '[unlike]';
+        var newc = c + 1;
+        var newtxt = '[unlike]';
+
+        var opt = '/disc_like/';
+
+        if(txt === '[unlike]') {
+            newc = c - 1;
+            newtxt = '[like]';
         }
-        else
-        {
-            document.getElementById(id + 'score').innerHTML = c - 1;
-            document.getElementById(id + 'text').innerHTML = '[like]';
+
+        if(type === 1) {
+            opt = '/resp_like/';
         }
+
+        document.getElementById(id + 'score').innerHTML = newc;
+        document.getElementById(id + 'text').innerHTML = newtxt;
+
+        xhttp.open('GET', opt + id, true);
+        xhttp.send();
     }
 </script>

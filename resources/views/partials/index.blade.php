@@ -49,8 +49,7 @@
 <script>
     var count = document.getElementById('disc_count').innerHTML
 
-    for(var i = 0; i < count; i++)
-    {
+    for(var i = 0; i < count; i++) {
         new Vue({
             el: '#app-' + i,
             data: {

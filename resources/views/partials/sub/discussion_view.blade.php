@@ -15,7 +15,7 @@
             @else
             <span style="cursor: pointer; float: right;">
                 <a id="{{ $post->id }}text"
-                onclick="like_resp({{ $post->id }})">{{ $post->liked }}</a>
+                onclick="like({{ $post->id }}, 1)">{{ $post->liked }}</a>
             </span>
             @endguest
     </div>
