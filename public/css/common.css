@@ -169,6 +169,9 @@ hr
 
 .boxarg
 {
+    border-style: solid;
+    border-color: #b3b3b3;
+    border-width: 1px;
     font-size: 13px;
     background-color: #fbfbfb;
     padding: 15px;

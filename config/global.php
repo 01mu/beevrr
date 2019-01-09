@@ -5,5 +5,5 @@
  */
 
 return [    'pagination' => 10,
-            'an_hour' => 60 * 60, /* for debugging */
-            'use_https' => 1,];
+            'an_hour' => 1, /* for debugging */
+            'use_https' => 0,];
