@@ -18,6 +18,11 @@ use Hash;
 
 class Views extends Controller
 {
+    public function test()
+    {
+        return "asd";
+    }
+
     /* show index page with discussions
      *
      * args:    $page = pagination
