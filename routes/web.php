@@ -115,3 +115,10 @@ if(config('global.use_https'))
 }
 
 //Route::post('mobile/login', 'Auth\LoginController@login')->name('mobile-login');
+
+Route::post('mobile/login', 'Mobile\UserController@login');
+Route::post('mobile/register', 'Mobile\UserController@register');
+
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('mobile/details', 'Mobile\UserController@details');
+});

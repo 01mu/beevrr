@@ -16,7 +16,7 @@ use Auth;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'users';
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace beevrr\Http\Controllers\API;
+namespace beevrr\Http\Controllers\Mobile;
 use Illuminate\Http\Request;
 use beevrr\Http\Controllers\Controller;
 use beevrr\User;
