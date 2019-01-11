@@ -116,4 +116,5 @@ if(config('global.use_https'))
 
 Route::post('mobile/login', 'Mobile\UserController@login');
 Route::post('mobile/register', 'Mobile\UserController@register');
-Route::post('mobile/details', 'Mobile\UserController@details');
+Route::get('mobile/details', 'Mobile\UserController@details');
+Route::post('mobile/logout', 'Mobile\UserController@logout');

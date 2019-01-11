@@ -9,7 +9,7 @@ namespace beevrr;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 
 use Auth;
@@ -86,5 +86,21 @@ class User extends Authenticatable
     public static function select_from($user_id)
     {
         return User::select('*')->where('id', $user_id)->get();
+    }
+
+    public static function new_user(array $data)
+    {
+        return User::create([
+            'user_name' => $data['user_name'],
+            'password' => Hash::make($data['password']),
+            'score' => 0,
+            'total_responses' => 0,
+            'active_responses' => 0,
+            'total_votes' => 0,
+            'active_votes' => 0,
+            'total_discussions' => 0,
+            'active_discussions' => 0,
+            'bio' => '',
+        ]);
     }
 }

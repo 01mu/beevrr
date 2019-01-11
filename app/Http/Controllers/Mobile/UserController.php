@@ -1,61 +1,79 @@
 <?php
+/*
+ * beevrr
+ * github.com/01mu
+ */
 
 namespace beevrr\Http\Controllers\Mobile;
+
 use Illuminate\Http\Request;
 use beevrr\Http\Controllers\Controller;
 use beevrr\User;
 use Illuminate\Support\Facades\Auth;
+use beevrr\Http\Controllers\Auth\RegisterController;
 use Validator;
 
 class UserController extends Controller
 {
-public $successStatus = 200;
-/**
-     * login api
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function login(){
-        if(Auth::attempt(['user_name' => request('user_name'), 'password' => request('password')])){
+    public function login()
+    {
+        $auth = ['user_name' => request('user_name'), 'password' =>
+            request('password')];
+
+        if(Auth::attempt($auth))
+        {
             $user = Auth::user();
-            $success['token'] =  $user->createToken('beevrr')-> accessToken;
-            return response()->json(['success' => $success], $this-> successStatus);
+            $success['token'] =  $user->createToken('beevrr')->accessToken;
+
+            return response()->json(['status'=>'success',
+                'auth' => $success], 200);
         }
-        else{
-            return response()->json(['error'=>'Unauthorised'], 401);
+        else
+        {
+            return response()->json(['status'=>'failure'], 401);
         }
     }
-/**
-     * Register api
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'c_password' => 'required|same:password',
-        ]);
-if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+        $validator = Validator::make($request->all(), array(
+            'user_name' => ['required', 'min:3', 'max:30', 'alpha_num',
+            'string', 'unique:users'],
+            'password' => ['required', 'min:3', 'string', 'confirmed'],));
+
+        if($validator->fails())
+        {
+            return response()->json(['error' => $validator->errors()], 401);
         }
-$input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('beevrr')-> accessToken;
-        $success['name'] =  $user->name;
-return response()->json(['success'=>$success], $this-> successStatus);
+
+        $user = User::new_user($request->all());
+
+        $success['token'] =  $user->createToken('beevrr')->accessToken;
+        $success['user_name'] =  $user->user_name;
+
+        return response()->json(['status'=>'success',
+            'auth' => $success], 200);
     }
-/**
-     * details api
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+    public function logout()
+    {
+        if(Auth::check())
+        {
+            Auth::logout();
+            return response()->json(['status' => 'success'], 200);
+        }
+
+        return response()->json(['status'=>'failure'], 401);
+    }
+
     public function details()
     {
-        $user = Auth::user();
-        return response()->json(['success' => $user], $this-> successStatus);
+        if(Auth::check())
+        {
+            return response()->json(['status'=>'success',
+                'auth' => Auth::user()], 200);
+        }
+
+        return response()->json(['status'=>'failure'], 401);
     }
 }

@@ -33,7 +33,7 @@ class LoginController extends Controller
         {
             session()->flash('notice', 'Bad CAPTCHA!');
 
-            //return redirect('notice');
+            return redirect('notice');
         }
 
         $auth = ['user_name' => $request->user_name,
