@@ -68,12 +68,7 @@ class UserController extends Controller
 
     public function details()
     {
-        if(Auth::check())
-        {
-            return response()->json(['status'=>'success',
-                'auth' => Auth::user()], 200);
-        }
-
-        return response()->json(['status'=>'failure'], 200);
+        return response()->json(['status'=>'success',
+            'auth' => Auth::user()], 200);
     }
 }
