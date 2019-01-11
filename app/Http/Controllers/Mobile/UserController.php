@@ -30,7 +30,7 @@ class UserController extends Controller
         }
         else
         {
-            return response()->json(['status'=>'failure'], 401);
+            return response()->json(['status'=>'failure'], 200);
         }
     }
 
@@ -43,7 +43,7 @@ class UserController extends Controller
 
         if($validator->fails())
         {
-            return response()->json(['error' => $validator->errors()], 401);
+            return response()->json(['error' => $validator->errors()], 200);
         }
 
         $user = User::new_user($request->all());
@@ -63,7 +63,7 @@ class UserController extends Controller
             return response()->json(['status' => 'success'], 200);
         }
 
-        return response()->json(['status'=>'failure'], 401);
+        return response()->json(['status'=>'failure'], 200);
     }
 
     public function details()
@@ -74,6 +74,6 @@ class UserController extends Controller
                 'auth' => Auth::user()], 200);
         }
 
-        return response()->json(['status'=>'failure'], 401);
+        return response()->json(['status'=>'failure'], 200);
     }
 }
