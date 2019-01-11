@@ -18,9 +18,9 @@ use Hash;
 
 class Views extends Controller
 {
-    public function test()
+    public function test(Request $request)
     {
-        return "asd";
+        return $request->user_name;
     }
 
     /* show index page with discussions
