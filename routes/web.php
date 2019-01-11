@@ -114,4 +114,4 @@ if(config('global.use_https'))
     URL::forceScheme('https');
 }
 
-Route::post('mobile/login', 'Auth\LoginController@login')->name('mobile-login');
+//Route::post('mobile/login', 'Auth\LoginController@login')->name('mobile-login');
