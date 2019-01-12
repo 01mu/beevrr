@@ -64,6 +64,8 @@ class Views extends Controller
 
         if($request['mobile'])
         {
+            $content['status'] = 'good';
+
             return response()->json($content, 200);
         }
         else
