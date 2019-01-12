@@ -114,6 +114,11 @@ if(config('global.use_https'))
     URL::forceScheme('https');
 }
 
+Route::group(['middleware' => ['mlog', 'setm']], function ()
+{
+    Route::get('mobile/dashboard', 'Views@dashboard');
+});
+
 Route::post('mobile/login', 'Mobile\UserController@login');
 Route::post('mobile/register', 'Mobile\UserController@register');
 Route::get('mobile/details', 'Mobile\UserController@details');

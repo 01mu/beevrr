@@ -57,12 +57,19 @@ class Views extends Controller
      * returns: if not logged in: notice redirect
      *          else: dashboard view with info
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $content =  Common::get_stats();
         $content['user'] = User::where('id', Auth::user()->id)->get();
 
-        return view('dashboard')->with('content', $content);
+        if($request['mobile'])
+        {
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return view('dashboard')->with('content', $content);
+        }
     }
 
     public function search_view()
