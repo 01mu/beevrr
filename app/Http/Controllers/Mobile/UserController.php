@@ -12,6 +12,7 @@ use beevrr\User;
 use Illuminate\Support\Facades\Auth;
 use beevrr\Http\Controllers\Auth\RegisterController;
 use Validator;
+use Hash;
 
 class UserController extends Controller
 {
@@ -25,34 +26,43 @@ class UserController extends Controller
             $user = Auth::user();
             $success['token'] =  $user->createToken('beevrr')->accessToken;
 
-            return response()->json(['status'=>'success',
+            return response()->json(['status' => 'success',
                 'auth' => $success], 200);
         }
         else
         {
-            return response()->json(['status'=>'failure'], 200);
+            return response()->json(['status' => 'failure'], 200);
         }
     }
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), array(
+        $validator = Validator::make($request->all(), [
             'user_name' => ['required', 'min:3', 'max:30', 'alpha_num',
-            'string', 'unique:users'],
-            'password' => ['required', 'min:3', 'string', 'confirmed'],));
+                'string', 'unique:users'],
+            'password' => ['required', 'min:3', 'string', 'same:passwordc'],
+            'passwordc' => ['required', 'min:3', 'string', 'same:password'],
+        ]);
 
         if($validator->fails())
         {
-            return response()->json(['error' => $validator->errors()], 200);
+            return response()->json(['status'=>'failure'], 200);
         }
 
-        $user = User::new_user($request->all());
+        User::create([
+            'user_name' => $request->user_name,
+            'password' => Hash::make($request->password),
+            'score' => 0,
+            'total_responses' => 0,
+            'active_responses' => 0,
+            'total_votes' => 0,
+            'active_votes' => 0,
+            'total_discussions' => 0,
+            'active_discussions' => 0,
+            'bio' => '',
+        ]);
 
-        $success['token'] =  $user->createToken('beevrr')->accessToken;
-        $success['user_name'] =  $user->user_name;
-
-        return response()->json(['status'=>'success',
-            'auth' => $success], 200);
+        return response()->json(['status' => 'success'], 200);
     }
 
     public function logout()
@@ -63,12 +73,6 @@ class UserController extends Controller
             return response()->json(['status' => 'success'], 200);
         }
 
-        return response()->json(['status'=>'failure'], 200);
-    }
-
-    public function details()
-    {
-        return response()->json(['status'=>'success',
-            'auth' => Auth::user()], 200);
+        return response()->json(['status' => 'failure'], 200);
     }
 }

@@ -121,7 +121,10 @@ Route::group(['middleware' => ['mlog', 'setm']], function ()
     Route::post('mobile/change_password', 'Views@change_pw');
 });
 
-Route::post('mobile/login', 'Mobile\UserController@login');
-Route::post('mobile/register', 'Mobile\UserController@register');
-Route::get('mobile/details', 'Mobile\UserController@details');
-Route::post('mobile/logout', 'Mobile\UserController@logout');
+Route::group([], function ()
+{
+    Route::post('mobile/login', 'Mobile\UserController@login');
+    Route::post('mobile/register', 'Mobile\UserController@register');
+    Route::post('mobile/logout', 'Mobile\UserController@logout');
+});
+
