@@ -132,7 +132,7 @@ class Views extends Controller
 
         if($validator->fails())
         {
-            return Common::notice_msg('Invalid input!');
+            return $this->mobile_or_msg($request, false, 'Invalid input!');
         }
 
         if(Hash::check($request->oldpw, Auth::user()->password))
@@ -140,10 +140,31 @@ class Views extends Controller
             User::update_profile('pass', Hash::make($request->newpw));
             Auth::logout();
 
-            return Common::notice_msg('Password changed!');
+            return $this->mobile_or_msg($request, true, 'Password changed!');
         }
 
-        return Common::notice_msg('Invalid input!');
+        return $this->mobile_or_msg($request, false, 'Invalid input!');
+    }
+
+    public function mobile_or_msg($request, $success, $msg)
+    {
+        if($request['mobile'])
+        {
+            $out = 'failure';
+
+            if($success)
+            {
+                $out = 'success';
+            }
+
+            $content['status'] = $out;
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return Common::notice_msg($msg);
+        }
     }
 
     /* change user bio
@@ -158,12 +179,12 @@ class Views extends Controller
 
         if($validator->fails())
         {
-            return Common::notice_msg('Invalid input!');
+            return $this->mobile_or_msg($request, false, 'Invalid input!');
         }
 
         User::update_profile('bio', strip_tags($request->bio));
 
-        return Common::notice_msg('Bio updated!');
+        return $this->mobile_or_msg($request, true, 'Bio updated!');
     }
 
     /* return notice page with session flash message
