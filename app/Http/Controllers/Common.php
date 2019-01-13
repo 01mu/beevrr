@@ -19,6 +19,27 @@ use DateTime;
 
 class Common extends Controller
 {
+    public static function mobile_or_msg($request, $success, $msg)
+    {
+        if($request['mobile'])
+        {
+            $out = 'failure';
+
+            if($success)
+            {
+                $out = 'success';
+            }
+
+            $content['status'] = $out;
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return Common::notice_msg($msg);
+        }
+    }
+
     /* get pagination array for route redirects and check whether user is on
      * page 0
      *

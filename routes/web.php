@@ -121,10 +121,19 @@ Route::group(['middleware' => ['mlog', 'setm']], function ()
     Route::post('mobile/change_password', 'Views@change_pw');
 });
 
+Route::group(['middleware' => ['setm']], function ()
+{
+    Route::get('mobile/user_info/{id}/{option}', 'User@user_info');
+    Route::get('mobile/user_info/{id}/{option}/p', 'User@user_info')
+        ->name('mobile-page-ui-h');
+    Route::get('mobile/user_info/{id}/{option}/p/{p}', 'User@user_info')
+        ->name('mobile-page-ui');
+});
+
 Route::group([], function ()
 {
-    Route::post('mobile/login', 'Mobile\UserController@login');
-    Route::post('mobile/register', 'Mobile\UserController@register');
-    Route::post('mobile/logout', 'Mobile\UserController@logout');
+    Route::post('mobile/login', 'User@login');
+    Route::post('mobile/register', 'User@register');
+    Route::post('mobile/logout', 'User@logout');
 });
 

@@ -8,6 +8,7 @@ namespace beevrr\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use beevrr\Http\Controllers\Controller;
 use beevrr\Http\Controllers\Common;
 use beevrr\Models\ActivityModel;
 
@@ -17,6 +18,84 @@ use Validator;
 
 class User extends Controller
 {
+    /* mobile login
+     *
+     * args:    none
+     *
+     * returns: json response
+     */
+    public function login()
+    {
+        $auth = ['user_name' => request('user_name'), 'password' =>
+            request('password')];
+
+        if(Auth::attempt($auth))
+        {
+            $user = Auth::user();
+            $success['token'] =  $user->createToken('beevrr')->accessToken;
+
+            return response()->json(['status' => 'success',
+                'auth' => $success], 200);
+        }
+        else
+        {
+            return response()->json(['status' => 'failure'], 200);
+        }
+    }
+
+    /* mobile register
+     *
+     * args:    none
+     *
+     * returns: json response
+     */
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_name' => ['required', 'min:3', 'max:30', 'alpha_num',
+                'string', 'unique:users'],
+            'password' => ['required', 'min:3', 'string', 'same:passwordc'],
+            'passwordc' => ['required', 'min:3', 'string', 'same:password'],
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json(['status'=>'failure'], 200);
+        }
+
+        User::create([
+            'user_name' => $request->user_name,
+            'password' => Hash::make($request->password),
+            'score' => 0,
+            'total_responses' => 0,
+            'active_responses' => 0,
+            'total_votes' => 0,
+            'active_votes' => 0,
+            'total_discussions' => 0,
+            'active_discussions' => 0,
+            'bio' => '',
+        ]);
+
+        return response()->json(['status' => 'success'], 200);
+    }
+
+    /* mobile logout
+     *
+     * args:    none
+     *
+     * returns: json response
+     */
+    public function logout()
+    {
+        if(Auth::check())
+        {
+            Auth::logout();
+            return response()->json(['status' => 'success'], 200);
+        }
+
+        return response()->json(['status' => 'failure'], 200);
+    }
+
     /* view a user's page
      *
      * args:    $user_id = id of user
@@ -39,14 +118,14 @@ class User extends Controller
      * returns: if error: notice redirect
      *          else: user info page with activities
      */
-    public function user_info($user_id, $option, $page = 0)
+    public function user_info($user_id, $option, $page = 0, Request $request)
     {
         $validator = Validator::make([$option], array(
             ['in:tot_res,act_res,tot_vot,act_vot,tot_dis,act_dis,act'],));
 
         if($validator->fails())
         {
-            return Common::notice_msg('Invalid option!');
+            return Common::mobile_or_msg($request, false, 'Invalid option!');
         }
 
         $user = \beevrr\User::select_from($user_id);;
@@ -62,7 +141,25 @@ class User extends Controller
 
         if(Common::pagination_redirect($activities, $page))
         {
-            return Redirect::route('user-info', [$user_id, $option]);
+            if($request['mobile'])
+            {
+                $content['status'] = 'end_pagination';
+
+                return response()->json($content, 200);
+            }
+            else
+            {
+                return Redirect::route('user-info', [$user_id, $option]);
+            }
+        }
+
+        if($request['mobile'])
+        {
+            $pg_route = 'mobile-page-ui';
+        }
+        else
+        {
+            $pg_route = 'page-ui';
         }
 
         $content = Common::get_stats();
@@ -70,19 +167,28 @@ class User extends Controller
         $content['title'] = $title;
         $content['activities'] = $activities;
 
-        $l = route('page-ui', array(
+        $l = route($pg_route, array(
             'id' => $user_id,
             'option' => $option,
             'p' => $page - 1,));
 
-        $r = route('page-ui', array(
+        $r = route($pg_route, array(
             'id' => $user_id,
             'option' => $option,
             'p' => $page + 1,));
 
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
-        return view('user_info')->with('content', $content);
+        if($request['mobile'])
+        {
+            $content['status'] = 'success';
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return view('user_info')->with('content', $content);
+        }
     }
 
     /* convert user activities in db to readable strings
