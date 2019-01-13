@@ -15,6 +15,7 @@ use beevrr\Models\ActivityModel;
 use Auth;
 use Redirect;
 use Validator;
+use Hash;
 
 class User extends Controller
 {
@@ -53,7 +54,7 @@ class User extends Controller
     {
         $validator = Validator::make($request->all(), [
             'user_name' => ['required', 'min:3', 'max:30', 'alpha_num',
-                'string', 'unique:users'],
+                'string', 'iunique:users,user_name'],
             'password' => ['required', 'min:3', 'string', 'same:passwordc'],
             'passwordc' => ['required', 'min:3', 'string', 'same:password'],
         ]);
@@ -63,7 +64,7 @@ class User extends Controller
             return response()->json(['status'=>'failure'], 200);
         }
 
-        User::create([
+        \beevrr\User::create([
             'user_name' => $request->user_name,
             'password' => Hash::make($request->password),
             'score' => 0,
