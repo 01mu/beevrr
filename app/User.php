@@ -85,7 +85,10 @@ class User extends Authenticatable
 
     public static function select_from($user_id)
     {
-        return User::select('*')->where('id', $user_id)->get();
+        return User::select('id', 'user_name', 'score', 'total_responses',
+            'active_responses', 'total_votes', 'active_votes',
+            'total_discussions', 'active_discussions',
+            'bio')->where('id', $user_id)->get();
     }
 
     public static function new_user(array $data)
