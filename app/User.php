@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 
 use Auth;
+use DB;
 
 class User extends Authenticatable
 {
@@ -81,6 +82,13 @@ class User extends Authenticatable
         }
 
         $user_update->save();
+    }
+
+    public static function check_lower($user_name)
+    {
+        $query = 'SELECT user_name FROM users WHERE LOWER(user_name) = ?';
+
+        return DB::select($query, [$user_name]);
     }
 
     public static function select_from($user_id)

@@ -27,7 +27,14 @@ class User extends Controller
      */
     public function login()
     {
-        $auth = ['user_name' => request('user_name'), 'password' =>
+        $lower = \beevrr\User::check_lower(strtolower(request('user_name')));
+
+        if(count($lower) === 0)
+        {
+            return response()->json(['status' => 'failure'], 200);
+        }
+
+        $auth = ['user_name' => $lower[0]->user_name, 'password' =>
             request('password')];
 
         if(Auth::attempt($auth))
@@ -36,7 +43,7 @@ class User extends Controller
             $success['token'] =  $user->createToken('beevrr')->accessToken;
 
             return response()->json(['status' => 'success',
-                'auth' => $success], 200);
+                'auth' => $success, 'user' => $user], 200);
         }
         else
         {

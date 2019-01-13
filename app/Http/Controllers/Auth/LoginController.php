@@ -36,17 +36,24 @@ class LoginController extends Controller
             return redirect('notice');
         }
 
-        $auth = ['user_name' => $request->user_name,
+        $lower = \beevrr\User::check_lower(strtolower($request->user_name));
+
+        if(count($lower) === 0)
+        {
+            return redirect('login');
+        }
+
+        $auth = ['user_name' => $lower[0]->user_name,
             'password' => $request->password];
 
         if(Auth::attempt($auth))
         {
+            Auth::user()->user_name = $lower[0]->user_name;
             return $this->sendLoginResponse($request);
         }
         else
         {
-            return $this->sendFailedLoginResponse($request,
-                'auth.failed_status');
+            return redirect('login');
         }
     }
 }
