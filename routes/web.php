@@ -123,11 +123,10 @@ Route::group(['middleware' => ['mlog', 'setm']], function ()
 
 Route::group(['middleware' => ['setm']], function ()
 {
-    Route::get('mobile/user_info/{id}/{option}', 'User@user_info');
-    Route::get('mobile/user_info/{id}/{option}/p', 'User@user_info')
-        ->name('mobile-page-ui-h');
     Route::get('mobile/user_info/{id}/{option}/p/{p}', 'User@user_info')
         ->name('mobile-page-ui');
+    Route::get('mobile/home/p/{p}', 'Views@index')
+        ->name('page');
 });
 
 Route::group([], function ()

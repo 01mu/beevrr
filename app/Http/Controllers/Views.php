@@ -23,7 +23,7 @@ class Views extends Controller
      * args:    $page = pagination
      * returns: view with discussions
      */
-    public function index($page = 0)
+    public function index($page = 0, Request $request)
     {
         $pagination = config('global.pagination');
 
@@ -31,7 +31,16 @@ class Views extends Controller
 
         if(Common::pagination_redirect($discussions, $page))
         {
-            return redirect('/');
+            if($request['mobile'])
+            {
+                $content['status'] = 'end_pagination';
+
+                return response()->json($content, 200);
+            }
+            else
+            {
+                return redirect('/');
+            }
         }
 
         $content = Common::get_stats();
@@ -43,7 +52,16 @@ class Views extends Controller
 
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
-        return view('index')->with('content', $content);
+        if($request['mobile'])
+        {
+            $content['status'] = 'success';
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return view('index')->with('content', $content);
+        }
     }
 
     /* show user dashboard

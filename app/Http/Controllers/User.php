@@ -43,7 +43,7 @@ class User extends Controller
             $success['token'] =  $user->createToken('beevrr')->accessToken;
 
             return response()->json(['status' => 'success',
-                'auth' => $success, 'user' => $user], 200);
+                'auth' => $success], 200);
         }
         else
         {
