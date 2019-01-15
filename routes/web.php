@@ -121,8 +121,9 @@ Route::group(['middleware' => ['mlog', 'setm']], function ()
     Route::post('mobile/change_password', 'Views@change_pw');
 });
 
-Route::group(['middleware' => ['setm']], function ()
+Route::group(['middleware' => ['setm', 'disc']], function ()
 {
+    Route::get('mobile/discussion_view/{id}', 'Discussion@disc_view');
     Route::get('mobile/user_info/{id}/{option}/p/{p}', 'User@user_info')
         ->name('mobile-page-ui');
     Route::get('mobile/home/p/{p}', 'Views@index')

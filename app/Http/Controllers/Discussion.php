@@ -30,7 +30,7 @@ class Discussion extends Controller
      * returns: if invalid discussion: notice redirect
      *          if valid: view with discussion info
      */
-    public function disc_view($disc_id)
+    public function disc_view($disc_id, Request $request)
     {
         $discussion = DiscussionModel::select_from($disc_id);
         $phase = $discussion->current_phase;
@@ -38,7 +38,6 @@ class Discussion extends Controller
         $this->add_change_symbol($discussion);
 
         $content = Common::get_stats();
-        $content['discussion'] = $discussion;
         $content['next_phase'] = $this->get_changing_message($discussion);
         $content['action'] = $this->get_user_action($disc_id);
         $content['can_reply'] = CheckCanRespond::check_can_respond($disc_id);
@@ -47,7 +46,15 @@ class Discussion extends Controller
         $content['a'] = ResponseModel::disc_responses('against', $disc_id);
         $content['liked'] = $this->get_like_text($disc_id);
 
-        return view('discussion_view')->with('content', $content);
+        if ($request['mobile']) {
+            $content['status'] = 'success';
+
+            return response()->json($content, 200);
+        } else {
+            $content['discussion'] = $discussion;
+
+            return view('discussion_view')->with('content', $content);
+        }
     }
 
     /* check if user is logged in and dispay discussion submision form
