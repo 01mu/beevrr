@@ -103,6 +103,7 @@ Route::group(['middleware' => ['setm']], function ()
 
 Route::group([], function ()
 {
+    Route::get('mobile/check', 'User@check_login');
     Route::post('mobile/login', 'User@login');
     Route::post('mobile/register', 'User@register');
     Route::post('mobile/logout', 'User@logout');

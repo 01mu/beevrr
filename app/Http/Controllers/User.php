@@ -19,10 +19,15 @@ use Hash;
 
 class User extends Controller
 {
+    public function check_login()
+    {
+        return response()->json(['status' => 'success', 'logged_in' =>
+            Auth::check()], 200);
+    }
+
     /* mobile login
      *
      * args:    none
-     *
      * returns: json response
      */
     public function login()
