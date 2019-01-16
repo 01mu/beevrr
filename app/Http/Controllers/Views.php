@@ -46,6 +46,7 @@ class Views extends Controller
         $content = Common::get_stats();
         $content['discussions'] = $discussions;
         $content['disc_count'] = count($discussions);
+        $content['logged_in'] = Auth::check();
 
         $l = route('page', array( 'p' => $page - 1,));
         $r = route('page', array( 'p' => $page + 1,));

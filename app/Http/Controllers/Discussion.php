@@ -46,11 +46,14 @@ class Discussion extends Controller
         $content['a'] = ResponseModel::disc_responses('against', $disc_id);
         $content['liked'] = $this->get_like_text($disc_id);
 
-        if ($request['mobile']) {
+        if ($request['mobile'])
+        {
             $content['status'] = 'success';
 
             return response()->json($content, 200);
-        } else {
+        }
+        else
+        {
             $content['discussion'] = $discussion;
 
             return view('discussion_view')->with('content', $content);
@@ -78,7 +81,7 @@ class Discussion extends Controller
         $captcha = Validator::make(Input::all(), array(
             'captcha' => 'required|captcha',));
 
-        if($captcha->fails())
+        if($captcha->fails() && !$request['mobile'])
         {
             return Common::notice_msg('Bad CAPTCHA!');
         }
@@ -92,7 +95,7 @@ class Discussion extends Controller
 
         if($validator->fails())
         {
-            return Common::notice_msg('Invalid input!');
+            return Common::mobile_or_msg($request, false, 'Invalid input!');
         }
 
         $time = time();
@@ -105,7 +108,7 @@ class Discussion extends Controller
         DiscussionModel::insert($prop, $arg, $pa, $a, $v, $time);
         User::update_stat('disc');
 
-        return Common::notice_msg('Discussion submitted!');
+        return Common::mobile_or_msg($request, true, 'Discussion submitted!');
     }
 
     /* check whether the user as performed any action relating to a discussion

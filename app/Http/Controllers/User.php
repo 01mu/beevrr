@@ -161,26 +161,17 @@ class User extends Controller
             }
         }
 
-        if($request['mobile'])
-        {
-            $pg_route = 'mobile-page-ui';
-        }
-        else
-        {
-            $pg_route = 'page-ui';
-        }
-
         $content = Common::get_stats();
         $content['user'] = $user[0];
         $content['title'] = $title;
         $content['activities'] = $activities;
 
-        $l = route($pg_route, array(
+        $l = route('page-ui', array(
             'id' => $user_id,
             'option' => $option,
             'p' => $page - 1,));
 
-        $r = route($pg_route, array(
+        $r = route('page-ui', array(
             'id' => $user_id,
             'option' => $option,
             'p' => $page + 1,));
