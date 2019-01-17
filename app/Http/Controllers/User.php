@@ -154,13 +154,13 @@ class User extends Controller
 
         if(Common::pagination_redirect($activities, $page))
         {
-            if($request['mobile'])
+            if($request['mobile'] && $page != 0)
             {
                 $content['status'] = 'end_pagination';
 
                 return response()->json($content, 200);
             }
-            else
+            else if(!$request['mobile'])
             {
                 return Redirect::route('user-info', [$user_id, $option]);
             }

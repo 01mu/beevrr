@@ -31,13 +31,13 @@ class Views extends Controller
 
         if(Common::pagination_redirect($discussions, $page))
         {
-            if($request['mobile'])
+            if($request['mobile'] && $page != 0)
             {
                 $content['status'] = 'end_pagination';
 
                 return response()->json($content, 200);
             }
-            else
+            else if(!$request['mobile'])
             {
                 return redirect('/');
             }
