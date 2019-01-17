@@ -24,6 +24,45 @@ use Auth;
 
 class Discussion extends Controller
 {
+    public function get_responses($type, $disc_id, $page = 0, Request $request)
+    {
+        $pagination = config('global.pagination');
+
+        $validator = Validator::make([$type], array(
+            [$type => 'required', 'in:for,against', 'string']));
+
+        if($validator->fails())
+        {
+            return Common::mobile_or_msg($request, false, 'Invalid input!');
+        }
+
+        $responses = ResponseModel::disc_responses_pag($type,
+            $disc_id, $page, $pagination);
+
+        if(Common::pagination_redirect($responses, $page))
+        {
+            if($request['mobile'] && $page != 0)
+            {
+                $content['status'] = 'end_pagination';
+
+                return response()->json($content, 200);
+            }
+            else if(!$request['mobile'])
+            {
+                return redirect('/');
+            }
+        }
+
+        $content['responses'] = $responses;
+
+        if($request['mobile'])
+        {
+            $content['status'] = 'success';
+
+            return response()->json($content, 200);
+        }
+    }
+
     /* prepare discussion for view
      *
      * args:    $disc_id = id of discussion
@@ -32,19 +71,21 @@ class Discussion extends Controller
      */
     public function disc_view($disc_id, Request $request)
     {
+        $mobile = $request['mobile'];
+
         $discussion = DiscussionModel::select_from($disc_id);
         $phase = $discussion->current_phase;
 
         $this->add_change_symbol($discussion);
 
         $content = Common::get_stats();
-        $content['next_phase'] = $this->get_changing_message($discussion);
+        $content['next_phase'] = $this->get_changing_message($discussion, $mobile);
         $content['action'] = $this->get_user_action($disc_id);
         $content['can_reply'] = CheckCanRespond::check_can_respond($disc_id);
         $content['can_vote'] = CheckCanVote::check_can_vote($disc_id, $phase);
         $content['liked'] = $this->get_like_text($disc_id);
 
-        if ($request['mobile'])
+        if ($mobile)
         {
             $content['logged_in'] = Auth::check();
             $content['status'] = 'success';
@@ -158,7 +199,7 @@ class Discussion extends Controller
      * args:    $discussion = discussion array
      * returns: message to be displayed
      */
-    private function get_changing_message($discussion)
+    private function get_changing_message($discussion, $mobile)
     {
         $message = 'finished';
 
@@ -184,20 +225,25 @@ class Discussion extends Controller
                 break;
         }
 
-        if($has_next)
+        if($until < 0)
         {
-            if($until < 0)
-            {
-                $message = 'changing soon...';
-            }
-            else
-            {
-                $until = number_format($until / 60 / 60, 2);
-                $message = $phase . ' phase in ' . $until . ' hours';
-            }
+            return 'changing soon...';
         }
 
-        return $message;
+        if($has_next)
+        {
+            $until = number_format($until / 60 / 60, 2);
+            $message = $phase . ' phase in ' . $until . ' hours';
+        }
+
+        if($mobile)
+        {
+            return $until . ' hours';
+        }
+        else
+        {
+            return $message;
+        }
     }
 
     /* convert time post value to seconds
@@ -279,7 +325,7 @@ class Discussion extends Controller
         }
     }
 
-    /* prepare message for display based on like
+    /* prepare message for display based on like status
      *
      * args:    $disc_id = discussion id
      * returns: "liked" string

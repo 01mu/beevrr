@@ -19,6 +19,28 @@ class ResponseModel extends Model
     public $timestamps = false;
     protected $dateFormat = 'U';
 
+    public static function disc_responses_pag($type, $disc_id, $page, $pagination)
+    {
+        $responses = ResponseModel::select('*')
+            ->where('proposition', $disc_id)
+            ->where('opinion', $type)
+            ->orderBy('score', 'DESC')
+            ->skip(Common::get_offset($page))
+            ->take($pagination)
+            ->get();
+
+        Common::fix_time($responses, 1);
+
+        for($i = 0; $i < count($responses); $i++)
+        {
+            $res = $responses[$i];
+
+            $res['liked'] = Response::get_like_text($res->id);
+        }
+
+        return $responses;
+    }
+
     /* insert new response
      *
      * args:    $response = response text
