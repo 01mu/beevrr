@@ -103,6 +103,10 @@ Route::group(['middleware' => ['setm']], function ()
     Route::get('mobile/discussion_view/{id}', 'Discussion@disc_view');
     Route::get('mobile/user_info/{id}/{option}/p/{p}', 'User@user_info');
     Route::get('mobile/home/p/{p}', 'Views@index');
+    Route::post('mobile/vote_submit/{phase}/{id}', 'Vote@vote_post');
+    Route::post('mobile/resp_submit/{id}', 'Response@resp_post');
+    Route::get('mobile/disc_like/{id}', 'Discussion@disc_like');
+    Route::get('mobile/resp_like/{id}', 'Response@resp_like');
 });
 
 Route::group([], function ()

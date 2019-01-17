@@ -50,7 +50,7 @@ class Vote extends Controller
         $captcha = Validator::make(Input::all(), array(
             'captcha' => 'required|captcha',));
 
-        if($captcha->fails())
+        if($captcha->fails() && !$request['mobile'])
         {
             return Common::notice_msg('Bad CAPTCHA!');
         }
@@ -68,7 +68,7 @@ class Vote extends Controller
 
         if($validator->fails())
         {
-            return Common::notice_msg('Invalid input!');
+            return Common::mobile_or_msg($request, false, 'Invalid input!');
         }
 
         $time = time();
@@ -81,7 +81,7 @@ class Vote extends Controller
         DiscussionModel::update_disc($disc_id, 'vote', $time);
         User::update_stat('vote');
 
-        return Common::notice_msg('Vote submitted!');
+        return Common::mobile_or_msg($request, true, 'Vote submitted!');
     }
 
     /* get type for activity insert based on vote post

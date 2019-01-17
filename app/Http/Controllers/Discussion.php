@@ -42,8 +42,6 @@ class Discussion extends Controller
         $content['action'] = $this->get_user_action($disc_id);
         $content['can_reply'] = CheckCanRespond::check_can_respond($disc_id);
         $content['can_vote'] = CheckCanVote::check_can_vote($disc_id, $phase);
-        $content['f'] = ResponseModel::disc_responses('for', $disc_id);
-        $content['a'] = ResponseModel::disc_responses('against', $disc_id);
         $content['liked'] = $this->get_like_text($disc_id);
 
         if ($request['mobile'])
@@ -54,6 +52,8 @@ class Discussion extends Controller
         }
         else
         {
+            $content['f'] = ResponseModel::disc_responses('for', $disc_id);
+            $content['a'] = ResponseModel::disc_responses('against', $disc_id);
             $content['discussion'] = $discussion;
 
             return view('discussion_view')->with('content', $content);
@@ -248,7 +248,7 @@ class Discussion extends Controller
      * args:    $disc_id = discussion id
      * returns: notice
      */
-    public function disc_like($disc_id)
+    public function disc_like($disc_id, Request $request)
     {
         if(LikesDiscModel::check_liked($disc_id))
         {
@@ -261,7 +261,7 @@ class Discussion extends Controller
             LikesDiscModel::insert_like($disc_id);
         }
 
-        return Common::notice_msg('Discussion liked!');
+        return Common::mobile_or_msg($request, true, 'Discussion liked!');
     }
 
     /* prepare message for display based on like

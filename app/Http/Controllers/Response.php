@@ -43,7 +43,7 @@ class Response extends Controller
         $captcha = Validator::make(Input::all(), array(
             'captcha' => 'required|captcha',));
 
-        if($captcha->fails())
+        if($captcha->fails() && !$request['mobile'])
         {
             return Common::notice_msg('Bad CAPTCHA!');
         }
@@ -54,7 +54,7 @@ class Response extends Controller
 
         if($validator->fails())
         {
-            return Common::notice_msg('Invalid input!');
+            return Common::mobile_or_msg($request, false, 'Invalid input!');
         }
 
         $time = time();
@@ -67,7 +67,7 @@ class Response extends Controller
         DiscussionModel::update_disc($disc_id, 'response', $time);
         User::update_stat('response');
 
-        return Common::notice_msg('Response submitted!');
+        return Common::mobile_or_msg($request, true, 'Response submitted!');
     }
 
     /* get type for activity input
@@ -95,7 +95,7 @@ class Response extends Controller
      * args:    $resp_id = response id
      * returns: notice
      */
-    public function resp_like($resp_id)
+    public function resp_like($resp_id, Request $request)
     {
         if(LikesRespModel::check_liked($resp_id))
         {
@@ -108,7 +108,7 @@ class Response extends Controller
             LikesRespModel::insert_like($resp_id);
         }
 
-        return Common::notice_msg('Response liked!');
+        return Common::mobile_or_msg($request, true, 'Response liked!');
     }
 
     /* prepare message for display based on like
