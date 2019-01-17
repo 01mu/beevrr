@@ -255,14 +255,28 @@ class Discussion extends Controller
         {
             DiscussionModel::make_like($disc_id, 0);
             LikesDiscModel::remove_like($disc_id);
+
+            $type = 'unliked';
         }
         else
         {
             DiscussionModel::make_like($disc_id, 1);
             LikesDiscModel::insert_like($disc_id);
+
+            $type = 'liked';
         }
 
-        return Common::mobile_or_msg($request, true, 'Discussion liked!');
+        if($request['mobile'])
+        {
+            $content['status'] = 'success';
+            $content['type'] = $type;
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return Common::notice_msg('Discussion ' . $type . '!');
+        }
     }
 
     /* prepare message for display based on like
