@@ -46,6 +46,7 @@ class Discussion extends Controller
 
         if ($request['mobile'])
         {
+            $content['logged_in'] = Auth::check();
             $content['status'] = 'success';
 
             return response()->json($content, 200);
