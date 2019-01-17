@@ -86,12 +86,12 @@ if(config('global.use_https'))
     URL::forceScheme('https');
 }
 
-Route::group(['middleware' => ['mlog', 'setm', 'throttle:1,10']], function ()
+Route::group(['middleware' => ['mlog', 'setm', 'throttle:3,10']], function ()
 {
     Route::post('mobile/disc_submit', 'Discussion@disc_sub_post');
 });
 
-Route::group(['middleware' => ['mlog', 'setm', 'throttle:1,10']], function ()
+Route::group(['middleware' => ['mlog', 'setm']], function ()
 {
     Route::get('mobile/dashboard', 'Views@dashboard');
     Route::post('mobile/change_bio', 'Views@change_bio');
