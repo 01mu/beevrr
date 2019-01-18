@@ -101,14 +101,28 @@ class Response extends Controller
         {
             ResponseModel::make_like($resp_id, 0);
             LikesRespModel::remove_like($resp_id);
+
+            $type = 'unliked';
         }
         else
         {
             ResponseModel::make_like($resp_id, 1);
             LikesRespModel::insert_like($resp_id);
+
+            $type = 'liked';
         }
 
-        return Common::mobile_or_msg($request, true, 'Response liked!');
+       if($request['mobile'])
+        {
+            $content['status'] = 'success';
+            $content['type'] = $type;
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return Common::notice_msg('Response ' . $type . '!');
+        }
     }
 
     /* prepare message for display based on like
