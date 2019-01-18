@@ -18,7 +18,14 @@ class CheckResponseExists
     {
         if(!ResponseModel::select_from($request->id))
         {
-            return Common::notice_msg('Invalid ID!');
+            if($request['mobile'])
+            {
+                return response()->json(['status' => 'failure'], 200);
+            }
+            else
+            {
+                return Common::notice_msg('Invalid ID!');
+            }
         }
 
         return $next($request);

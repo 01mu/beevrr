@@ -16,6 +16,7 @@ class SetMobile
     public function handle($request, Closure $next)
     {
         $request['mobile'] = 1;
+
         return $next($request);
     }
 }

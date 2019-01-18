@@ -109,20 +109,38 @@ Route::group([], function ()
     Route::get('change_bio', 'Views@home_redirect');
 });
 
-Route::group(['middleware' => ['mlog', 'setm', 'throttle:3,10']], function ()
+Route::group(['middleware' => ['setm', 'log', 'throttle:3,10']], function ()
 {
     Route::post('mobile/disc_submit', 'Discussion@disc_sub_post');
 });
 
-Route::group(['middleware' => ['mlog', 'setm']], function ()
+Route::group(['middleware' => ['setm', 'log']], function ()
 {
     Route::get('mobile/dashboard', 'Views@dashboard');
     Route::post('mobile/change_bio', 'Views@change_bio');
     Route::post('mobile/change_password', 'Views@change_pw');
-    Route::post('mobile/vote_submit/{phase}/{id}', 'Vote@vote_post');
+});
+
+Route::group(['middleware' => ['setm', 'log', 'disc', 'resp']], function ()
+{
     Route::post('mobile/resp_submit/{id}', 'Response@resp_post');
+});
+
+Route::group(['middleware' => ['setm', 'log', 'disc', 'vote']], function ()
+{
+    Route::post('mobile/vote_submit/{phase}/{id}', 'Vote@vote_post');
+});
+
+Route::group(['middleware' => ['setm', 'log', 'disc',
+    'throttle:3,10']], function ()
+{
     Route::get('mobile/disc_like/{id}', 'Discussion@disc_like');
-    Route::get('mobile/resp_like/{id}', 'Response@resp_like');
+});
+
+Route::group(['middleware' => ['setm', 'log', 'resp-e',
+    'throttle:5,10']], function ()
+{
+   Route::get('mobile/resp_like/{id}', 'Response@resp_like');
 });
 
 Route::group(['middleware' => ['setm']], function ()
@@ -133,9 +151,8 @@ Route::group(['middleware' => ['setm']], function ()
     Route::get('mobile/get_resp/{type}/{id}/p/{p}', 'Discussion@get_responses');
 });
 
-Route::group([], function ()
+Route::group(['middleware' => ['throttle:3,20']], function ()
 {
-    Route::get('mobile/check', 'User@check_login');
     Route::post('mobile/login', 'User@login');
     Route::post('mobile/register', 'User@register');
     Route::post('mobile/logout', 'User@logout');

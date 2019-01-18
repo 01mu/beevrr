@@ -18,7 +18,14 @@ class CheckCanRespond
     {
         if(!$this->check_can_respond($request->id))
         {
-            return Common::notice_msg('Cannot respond!');
+            if($request['mobile'])
+            {
+                return response()->json(['status' => 'failure'], 200);
+            }
+            else
+            {
+                return Common::notice_msg('Cannot respond!');
+            }
         }
 
         return $next($request);

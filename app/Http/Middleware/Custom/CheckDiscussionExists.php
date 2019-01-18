@@ -17,7 +17,14 @@ class CheckDiscussionExists
     {
         if(!DiscussionModel::select_from($request->id))
         {
-            return Common::notice_msg('Invalid ID!');
+            if($request['mobile'])
+            {
+                return response()->json(['status' => 'not_logged_in'], 200);
+            }
+            else
+            {
+                return Common::notice_msg('Invalid ID!');
+            }
         }
 
         return $next($request);

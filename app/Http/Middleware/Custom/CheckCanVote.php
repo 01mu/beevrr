@@ -17,7 +17,14 @@ class CheckCanVote
     {
         if(!$this->check_can_vote($request->id, $request->phase))
         {
-            return Common::notice_msg('Cannot vote!');
+            if($request['mobile'])
+            {
+                return response()->json(['status' => 'failure'], 200);
+            }
+            else
+            {
+                return Common::notice_msg('Cannot vote!');
+            }
         }
 
         return $next($request);

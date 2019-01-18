@@ -19,7 +19,14 @@ class CheckUserExists
 
         if(count($select) === 0)
         {
-            return Common::notice_msg('Invalid ID!');
+            if($request['mobile'])
+            {
+                return response()->json(['status' => 'failure'], 200);
+            }
+            else
+            {
+                return Common::notice_msg('Invalid ID!');
+            }
         }
 
         return $next($request);

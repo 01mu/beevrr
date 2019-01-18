@@ -17,7 +17,14 @@ class CheckLoggedIn
     {
         if(!Auth::check())
         {
-            return Common::notice_msg('Not logged in!');
+            if($request['mobile'])
+            {
+                return response()->json(['status' => 'not_logged_in'], 200);
+            }
+            else
+            {
+                return Common::notice_msg('Not logged in!');
+            }
         }
 
         return $next($request);
