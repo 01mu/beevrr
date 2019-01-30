@@ -7,52 +7,52 @@
 <hr>
 <div class="flex">
     <div class="wrapper50">
-        info
+        Info
     </div>
     <div class="wrapper50">
-        bio
+        Bio
     </div>
 </div>
 <hr>
 <div class="box">
     <div class="flex">
         <div class="wrapper50">
-            • total responses: {{ $content['user'][0]->total_responses }}
+            • Total Responses: {{ $content['user'][0]->total_responses }}
             <span class="small">
                 <a href="{{ route('user-info',
                     ['id' => $content['user'][0]->id,
                     'option' => 'tot_res']) }}">
                     [view]</a>
             </span><br>
-            • active responses: {{ $content['user'][0]->active_responses }}
+            • Active Responses: {{ $content['user'][0]->active_responses }}
             <span class="small">
                 <a href="{{ route('user-info',
                     ['id' => $content['user'][0]->id,
                     'option' => 'act_res']) }}">
                     [view]</a>
             </span><br><br>
-            • total votes: {{ $content['user'][0]->total_votes }}
+            • Total Votes: {{ $content['user'][0]->total_votes }}
             <span class="small">
                 <a href="{{ route('user-info',
                     ['id' => $content['user'][0]->id,
                     'option' => 'tot_vot']) }}">
                     [view]</a>
             </span><br>
-            • active votes: {{ $content['user'][0]->active_votes }}
+            • Active Votes: {{ $content['user'][0]->active_votes }}
             <span class="small">
                 <a href="{{ route('user-info',
                     ['id' => $content['user'][0]->id,
                     'option' => 'act_vot']) }}">
                     [view]</a>
             </span><br><br>
-            • total discussions: {{ $content['user'][0]->total_discussions }}
+            • Total Discussions: {{ $content['user'][0]->total_discussions }}
             <span class="small">
                 <a href="{{ route('user-info',
                     ['id' => $content['user'][0]->id,
                     'option' => 'tot_dis']) }}">
                     [view]</a>
             </span><br>
-            • active discussions:
+            • Active Discussions:
                 {{ $content['user'][0]->active_discussions }}
             <span class="small">
                 <a href="{{ route('user-info',

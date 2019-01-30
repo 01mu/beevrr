@@ -3,7 +3,7 @@
     github.com/01mu
 -->
 
-<a href="{{ route('home') }}"><b>beevrr</b></a> | register
+<a href="{{ route('home') }}"><b>Beevrr</b></a> | Register
 <hr>
 @guest
     <div class="box">
@@ -23,16 +23,6 @@
                 {{ __('Register') }}
             </button>
         </form>
-        @if ($errors->has('user_name'))
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $errors->first('user_name') }}</strong>
-            </span>
-        @endif
-        @if ($errors->has('password'))
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $errors->first('password') }}</strong>
-            </span>
-        @endif
     </div>
 @else
 

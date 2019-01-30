@@ -6,14 +6,14 @@
 @guest
 
 @else
-    <b>dashboard</b>
+    <b>Dashboard</b>
     <hr>
     <div class="flex">
         <div class="wrapper50">
-            change password
+            Change Password
         </div>
         <div class="wrapper50">
-            stats
+            Stats
         </div>
     </div>
     <hr>
@@ -30,22 +30,22 @@
                         type="password" id="newpw" name="newpw"><br>
                     <input placeholder="confirm new password"
                         type="password" id="connewpw" name="connewpw"><br>
-                    <button type="submit">change</button>
+                    <button type="submit">Change</button>
                 </form>
             </div>
         </div>
         <div class="wrapper50">
             <div class="box">
-                • total responses: {{ $content['user'][0]->total_responses }}
+                • Total Responses: {{ $content['user'][0]->total_responses }}
                 <br>
-                • active responses: {{ $content['user'][0]->active_responses }}
+                • Active Responses: {{ $content['user'][0]->active_responses }}
                 <br><br>
-                • total votes: {{ $content['user'][0]->total_votes }}<br>
-                • active votes: {{ $content['user'][0]->active_votes }}
+                • Total Votes: {{ $content['user'][0]->total_votes }}<br>
+                • Active Votes: {{ $content['user'][0]->active_votes }}
                 <br><br>
-                • total discussions:{{ $content['user'][0]->total_discussions }}
+                • Total Discussions: {{ $content['user'][0]->total_discussions }}
                 <br>
-                • active discussions:
+                • Active Discussions:
                     {{ $content['user'][0]->active_discussions }}
             </div>
         </div>
@@ -53,7 +53,7 @@
     <hr>
     <div class="flex">
         <div class="wrapper50">
-            bio
+            Bio
         </div>
         <div class="wrapper50">
         </div>
@@ -69,7 +69,7 @@
                         placeholder="bio (max chars: 500)"
                         id="bio" name="bio"
                         >{{ $content['user'][0]->bio }}</textarea><br>
-                    <button type="submit">update</button>
+                    <button type="submit">Update</button>
                 </form>
             </div>
             </div>

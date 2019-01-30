@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use beevrr\Http\Controllers\Controller;
 use beevrr\Http\Controllers\Common;
+
 use beevrr\Models\ActivityModel;
 
 use Auth;
@@ -19,12 +20,6 @@ use Hash;
 
 class User extends Controller
 {
-    public function check_login()
-    {
-        return response()->json(['status' => 'success', 'logged_in' =>
-            Auth::check()], 200);
-    }
-
     /* mobile login
      *
      * args:    none
@@ -59,7 +54,6 @@ class User extends Controller
     /* mobile register
      *
      * args:    none
-     *
      * returns: json response
      */
     public function register(Request $request)
@@ -95,7 +89,6 @@ class User extends Controller
     /* mobile logout
      *
      * args:    none
-     *
      * returns: json response
      */
     public function logout()
@@ -183,16 +176,7 @@ class User extends Controller
 
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
-        if($request['mobile'])
-        {
-            $content['status'] = 'success';
-
-            return response()->json($content, 200);
-        }
-        else
-        {
-            return view('user_info')->with('content', $content);
-        }
+        return Common::mobile_or_view($request, 'user_info', $content);
     }
 
     /* convert user activities in db to readable strings

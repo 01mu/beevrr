@@ -7,8 +7,10 @@
 namespace beevrr\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use beevrr\Models\LikesDiscModel;
 use beevrr\Models\ActivityModel;
+
 use beevrr\Http\Controllers\Common;
 
 use Auth;

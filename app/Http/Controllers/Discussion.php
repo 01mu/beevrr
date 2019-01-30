@@ -9,9 +9,8 @@ namespace beevrr\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
-use beevrr\Http\Middleware\Custom\CheckCanVote;
-use beevrr\Http\Middleware\Custom\CheckCanRespond;
 use beevrr\Http\Controllers\Common;
+
 use beevrr\Models\DiscussionModel;
 use beevrr\Models\ResponseModel;
 use beevrr\Models\ActivityModel;
@@ -19,11 +18,21 @@ use beevrr\Models\VoteModel;
 use beevrr\Models\LikesDiscModel;
 use beevrr\User;
 
+use beevrr\Http\Middleware\Custom\CheckCanVote;
+use beevrr\Http\Middleware\Custom\CheckCanRespond;
+
 use Validator;
 use Auth;
 
 class Discussion extends Controller
 {
+    /* return responses to a discussion
+     *
+     * args:    $type = responses of type for or against
+     *          $disc_id = discussion id
+     * returns: if invalid discussion: notice redirect
+     *          if valid: jaon of responses
+     */
     public function get_responses($type, $disc_id, $page = 0, Request $request)
     {
         $pagination = config('global.pagination');
@@ -73,13 +82,13 @@ class Discussion extends Controller
     {
         $mobile = $request['mobile'];
 
-        $discussion = DiscussionModel::select_from($disc_id);
-        $phase = $discussion->current_phase;
+        $disc = DiscussionModel::select_from($disc_id);
+        $phase = $disc->current_phase;
 
-        $this->add_change_symbol($discussion);
+        $this->add_change_symbol($disc);
 
         $content = Common::get_stats();
-        $content['next_phase'] = $this->get_changing_message($discussion, $mobile);
+        $content['next_phase'] = $this->get_changing_message($disc, $mobile);
         $content['action'] = $this->get_user_action($disc_id);
         $content['can_reply'] = CheckCanRespond::check_can_respond($disc_id);
         $content['can_vote'] = CheckCanVote::check_can_vote($disc_id, $phase);
@@ -96,7 +105,7 @@ class Discussion extends Controller
         {
             $content['f'] = ResponseModel::disc_responses('for', $disc_id);
             $content['a'] = ResponseModel::disc_responses('against', $disc_id);
-            $content['discussion'] = $discussion;
+            $content['discussion'] = $disc;
 
             return view('discussion_view')->with('content', $content);
         }
@@ -225,7 +234,7 @@ class Discussion extends Controller
                 break;
         }
 
-        if($until < 0)
+        if($has_next && $until < 0)
         {
             return 'changing soon...';
         }

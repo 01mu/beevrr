@@ -18,7 +18,7 @@
 
 @else
 <div class="box">
-    none
+    None
 </div>
 @endif
 

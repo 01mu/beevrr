@@ -3,8 +3,7 @@
     github.com/01mu
 -->
 
-
-<b>search results</b>
+<b>Search Results</b>
 <hr>
 @if(count($content['search']) > 0)
     @foreach($content['search'] as $search)
@@ -28,7 +27,7 @@
     @endforeach
 @else
 <div class="box">
-    none
+    None
 </div>
 @endif
 @include('partials/sub/pagination', array(

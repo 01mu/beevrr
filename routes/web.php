@@ -121,24 +121,26 @@ Route::group(['middleware' => ['setm', 'log']], function ()
     Route::post('mobile/change_password', 'Views@change_pw');
 });
 
-Route::group(['middleware' => ['setm', 'log', 'disc', 'resp']], function ()
+Route::group(['middleware' => ['setm', 'log', 'disc', 'resp',
+                               'throttle:3,10']], function ()
 {
     Route::post('mobile/resp_submit/{id}', 'Response@resp_post');
 });
 
-Route::group(['middleware' => ['setm', 'log', 'disc', 'vote']], function ()
+Route::group(['middleware' => ['setm', 'log', 'disc', 'vote',
+                               'throttle:3,10']], function ()
 {
     Route::post('mobile/vote_submit/{phase}/{id}', 'Vote@vote_post');
 });
 
 Route::group(['middleware' => ['setm', 'log', 'disc',
-    'throttle:3,10']], function ()
+                               'throttle:3,10']], function ()
 {
     Route::get('mobile/disc_like/{id}', 'Discussion@disc_like');
 });
 
 Route::group(['middleware' => ['setm', 'log', 'resp-e',
-    'throttle:5,10']], function ()
+                               'throttle:5,10']], function ()
 {
    Route::get('mobile/resp_like/{id}', 'Response@resp_like');
 });
@@ -155,6 +157,10 @@ Route::group(['middleware' => ['throttle:3,20']], function ()
 {
     Route::post('mobile/login', 'User@login');
     Route::post('mobile/register', 'User@register');
+});
+
+Route::group([], function ()
+{
     Route::post('mobile/logout', 'User@logout');
 });
 

@@ -6,8 +6,9 @@
 
 namespace beevrr\Http\Middleware\Custom;
 
-use beevrr\Models\ResponseModel;
 use beevrr\Http\Controllers\Common;
+
+use beevrr\Models\ResponseModel;
 
 use Closure;
 use Auth;

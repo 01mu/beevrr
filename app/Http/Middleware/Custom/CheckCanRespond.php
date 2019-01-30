@@ -7,6 +7,7 @@
 namespace beevrr\Http\Middleware\Custom;
 
 use beevrr\Http\Controllers\Common;
+
 use beevrr\Models\DiscussionModel;
 
 use Closure;

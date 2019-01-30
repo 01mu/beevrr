@@ -7,7 +7,8 @@ hr
 
 body
 {
-    font-size: 14px;
+    padding: 5px;
+    font-size: 16px;
     line-height: 1.6;
     background-color: #fefefe;
     font-family: Verdana, Geneva, sans-serif;
@@ -16,7 +17,7 @@ body
 .bd
 {
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 1024px;
 }
 
 .top
@@ -55,7 +56,7 @@ body
 
 .box
 {
-    font-size: 13px;
+    font-size: 16px;
     background-color: #fbfbfb;
     padding: 5px;
     margin-bottom: 5px;
@@ -128,7 +129,7 @@ html
 
 .small
 {
-    font-size: 12px;
+    font-size: 13px;
     color: #666666;
 }
 

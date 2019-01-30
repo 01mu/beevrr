@@ -5,7 +5,7 @@
 
 <span class="hidden"
     id="disc_count">{{ $content['disc_count'] }}</span>
-<b>discussions</b>
+<b>Discussions</b>
 <hr>
 @for($i = 0; $i < $content['disc_count']; $i++)
     <span class="hidden"
@@ -43,7 +43,7 @@
 
 @else
     <hr>
-    <a class="button" href="{{ route('disc-sub-view') }}">submit discussion</a>
+    <a class="button" href="{{ route('disc-sub-view') }}">Submit Discussion</a>
 @endguest
 
 <script>

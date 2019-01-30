@@ -19,6 +19,34 @@ use DateTime;
 
 class Common extends Controller
 {
+    /* send a json response for mobile or return a page with specific content
+     *
+     * args:    $request = request object to check mobile middleware
+     *          $view = name of view to return
+     *          $content = content to display for view or json response
+     * returns: json or view with content
+     */
+    public static function mobile_or_view($request, $view, $content)
+    {
+        if($request['mobile'])
+        {
+            $content['status'] = 'success';
+
+            return response()->json($content, 200);
+        }
+        else
+        {
+            return view($view)->with('content', $content);
+        }
+    }
+
+    /* send a json response for mobile or return a view
+     *
+     * args:    $request = request object to check mobile middleware
+     *          $success = whether the response was valid
+     *          $msg = notice message for view
+     * returns: json or message view message
+     */
     public static function mobile_or_msg($request, $success, $msg)
     {
         if($request['mobile'])
@@ -46,7 +74,6 @@ class Common extends Controller
      * args:    $l = left redirect (back)
      *          $r = right redirect (forward)
      *          $page = current page
-     *
      * returns: array of redirect urls and whether the user is on page 0
      */
     public static function get_pagination_next($l, $r, $page)

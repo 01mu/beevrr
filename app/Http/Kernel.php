@@ -55,27 +55,13 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-
-        /* mobile - check if the user is logged in */
         'setm' => \beevrr\Http\Middleware\Mobile\SetMobile::class,
-        /* mobile - check if the user is logged in */
-        'mlog' => \beevrr\Http\Middleware\Mobile\CheckLoggedIn::class,
-
-
-        /* check if user can respond to discussion */
         'resp' => \beevrr\Http\Middleware\Custom\CheckCanRespond::class,
-        /* check if user exists */
         'user' => \beevrr\Http\Middleware\Custom\CheckUserExists::class,
-        /* check if user can vote on a discussion */
         'vote' => \beevrr\Http\Middleware\Custom\CheckCanVote::class,
-        /* check if a discussion exists */
         'disc' => \beevrr\Http\Middleware\Custom\CheckDiscussionExists::class,
-        /* check if the user is logged in */
         'log' => \beevrr\Http\Middleware\Custom\CheckLoggedIn::class,
-        /* check if a response exists */
         'resp-e' => \beevrr\Http\Middleware\Custom\CheckResponseExists::class,
-
-
         'auth' => \beevrr\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

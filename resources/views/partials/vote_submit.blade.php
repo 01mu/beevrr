@@ -3,16 +3,15 @@
     github.com/01mu
 -->
 
-
 @guest
 
 @else
-    <a href="{{ route('home') }}"><b>beevrr</b></a> | submit
+    <a href="{{ route('home') }}"><b>Beevrr</b></a> | Submit
 
     @if($content['phase'] === 'pre-argument')
-        pre-argument vote
+        Pre-Argument Vote
     @else
-        post-argument vote
+        Post-Argument Vote
     @endif
 
     <hr>
@@ -37,7 +36,7 @@
             {!! captcha_img('flat') !!}<br>
             <input autocomplete="off"
                 placeholder="captcha" type="text" name="captcha"><br>
-            <button type="submit">submit discussion</button>
+            <button type="submit">Submit Vote</button>
         </form>
     </div>
 

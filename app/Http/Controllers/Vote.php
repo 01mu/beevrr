@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
 
 use beevrr\Http\Controllers\Common;
+
 use beevrr\Models\VoteModel;
 use beevrr\Models\DiscussionModel;
 use beevrr\Models\ActivityModel;

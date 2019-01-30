@@ -9,6 +9,7 @@ namespace beevrr\Http\Controllers;
 use Illuminate\Http\Request;
 
 use beevrr\Http\Controllers\Common;
+
 use beevrr\Models\DiscussionModel;
 use beevrr\User;
 
@@ -53,16 +54,7 @@ class Views extends Controller
 
         $content['pagination'] = Common::get_pagination_next($l, $r, $page);
 
-        if($request['mobile'])
-        {
-            $content['status'] = 'success';
-
-            return response()->json($content, 200);
-        }
-        else
-        {
-            return view('index')->with('content', $content);
-        }
+        return Common::mobile_or_view($request, 'index', $content);
     }
 
     /* show user dashboard
@@ -76,16 +68,7 @@ class Views extends Controller
         $content =  Common::get_stats();
         $content['user'] = User::where('id', Auth::user()->id)->get();
 
-        if($request['mobile'])
-        {
-            $content['status'] = 'success';
-
-            return response()->json($content, 200);
-        }
-        else
-        {
-            return view('dashboard')->with('content', $content);
-        }
+        return Common::mobile_or_view($request, 'dashboard', $content);
     }
 
     public function search_view()

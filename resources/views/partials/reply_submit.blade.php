@@ -3,7 +3,7 @@
     github.com/01mu
 -->
 
-<a href="{{ route('home') }}"><b>beevrr</b></a> | submit reply
+<a href="{{ route('home') }}"><b>Beevrr</b></a> | Submit Response
 <hr>
 @guest
 
@@ -22,7 +22,7 @@
             {!! captcha_img('flat') !!}<br>
             <input autocomplete="off" placeholder="captcha" type="text"
                 name="captcha"><br>
-            <button type="submit">submit response</button>
+            <button type="submit">Submit Response</button>
         </form>
     </div>
 @endguest

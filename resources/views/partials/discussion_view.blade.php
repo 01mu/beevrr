@@ -30,10 +30,10 @@
 <hr>
 <div class="flex">
     <div class="wrapper50">
-        <b>arguments for</b>
+        <b>For</b>
     </div>
     <div class="wrapper50">
-         <b>arguments against</b>
+         <b>Against</b>
     </div>
 </div>
 <hr>
@@ -45,7 +45,7 @@
             @endforeach
         @else
             <div class="boxb">
-                none
+                None
             </div>
         @endif
     </div>
@@ -56,13 +56,13 @@
             @endforeach
         @else
             <div class="boxr">
-                none
+                None
             </div>
         @endif
     </div>
 </div>
 <hr>
-<b>info</b>
+<b>Info</b>
 <hr>
 <div class="box">
     <div class="small">
@@ -113,14 +113,19 @@
     <a class="button" href="{{ route('vote-view',
         array('phase' => $content['discussion']->current_phase,
         'id' => $content['discussion']->id)) }}">
-        submit {{ $content['discussion']->current_phase }} vote
+        Submit
+        @if($content['discussion']->current_phase === 'pre-argument')
+            Pre-Argument Vote
+        @else
+            Post-Argument Vote
+        @endif
     </a>
 @endif
 
 @if($content['can_reply'])
     <hr>
     <a class="button" href="{{ route('resp-view',
-        array('id' => $content['discussion']->id)) }}">submit response
+        array('id' => $content['discussion']->id)) }}">Submit Response
     </a>
 @endif
 
