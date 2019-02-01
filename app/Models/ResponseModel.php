@@ -19,14 +19,22 @@ class ResponseModel extends Model
     public $timestamps = false;
     protected $dateFormat = 'U';
 
-    public static function disc_responses_pag($type, $disc_id, $page, $pagination)
+    /* get json responses for a discussion
+    *
+    * args:     $type = "for" or "against"
+    *           $disc_id = id of discussion
+    *           $page = current page
+    *           $pagin = pagination limit
+    * returns:  json of responses
+    */
+    public static function disc_responses_pag($type, $disc_id, $page, $pagin)
     {
         $responses = ResponseModel::select('*')
             ->where('proposition', $disc_id)
             ->where('opinion', $type)
             ->orderBy('score', 'DESC')
             ->skip(Common::get_offset($page))
-            ->take($pagination)
+            ->take($pagin)
             ->get();
 
         Common::fix_time($responses, 1);
