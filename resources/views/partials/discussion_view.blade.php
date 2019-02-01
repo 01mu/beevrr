@@ -3,26 +3,30 @@
     github.com/01mu
 -->
 
-<b>{{ $content['discussion']->proposition }}</b>
+<div class="argtitle">
+    <b>{{ $content['discussion']->proposition }}</b>
+</div>
 <hr>
 <div class="boxarg">
     {!! nl2br($content['discussion']->argument) !!}
     <div style="margin-bottom:5px;"></div>
     <div class="small">
-        by <a href="{{ route('user-view',
-            array('id' => $content['discussion']->user_id)) }}">
+        by
+        <a   href="{{ route('user-view',
+                array('id' => $content['discussion']->user_id)) }}">
             {{ $content['discussion']->user_name }}
         </a>
         {{ $content['discussion']->post_date }} |
-        <span id="{{ $content['discussion']->id }}score"
-            >{{ $content['discussion']->score }}</span> likes
+        <span id="{{ $content['discussion']->id }}score">
+            {{ $content['discussion']->score }}
+        </span> likes
         @guest
 
         @else
         <span style="cursor: pointer; float: right;">
-            <a id="{{ $content['discussion']->id }}text"
-            onclick="like({{ $content['discussion']->id }}, 0)"
-            >{{ $content['liked'] }}</a>
+            <a  id="{{ $content['discussion']->id }}text"
+                onclick="like({{ $content['discussion']->id }}, 0)"
+                >{{ $content['liked'] }}</a>
         </span>
         @endguest
     </div>
@@ -68,9 +72,12 @@
     <div class="small">
         <div class="flex">
             <div class="wrapper50">
-                current phase: {{ $content['discussion']->current_phase }}
-                <br><br>
-                pre-argument <b>for</b>: {{ $content['discussion']->pa_for }}
+                current phase:
+                    {{ $content['discussion']->current_phase }}
+                <br>
+                <br>
+                pre-argument <b>for</b>:
+                    {{ $content['discussion']->pa_for }}
                     ({{ $content['discussion']->pa_for_per }}%)
                 <br>
                 pre-argument <b>against</b>:
@@ -80,7 +87,8 @@
                 pre-argument <b>undecided</b>:
                     {{ $content['discussion']->pa_undecided }}
                     ({{ $content['discussion']->pa_undecided_per }}%)
-                <br><br>
+                <br>
+                <br>
                 post-argument <b>for</b>: {{ $content['discussion']->pv_for }}
                     ({{ $content['discussion']->pv_for_per }}%)
                 <br>
@@ -90,19 +98,25 @@
             </div>
             <div class="wrapper50">
                 {{ $content['next_phase'] }}
-                <br><br>
-                <b>for</b> change: {{ $content['discussion']->for_change }}
-                percentage points
                 <br>
-                <b>against</b>
-                    change: {{ $content['discussion']->against_change }}
+                <br>
+                <b>for</b> change:
+                    {{ $content['discussion']->for_change }}
                     percentage points
                 <br>
-                <b>winner</b>: {{ $content['discussion']->winner }}
-                <br><br>
-                responses: {{ $content['discussion']->reply_count }}
+                <b>against</b> change:
+                    {{ $content['discussion']->against_change }}
+                    percentage points
                 <br>
-                votes: {{ $content['discussion']->vote_count }}
+                <b>winner</b>:
+                    {{ $content['discussion']->winner }}
+                <br>
+                <br>
+                responses:
+                    {{ $content['discussion']->reply_count }}
+                <br>
+                votes:
+                    {{ $content['discussion']->vote_count }}
             </div>
         </div>
     </div>
@@ -110,7 +124,8 @@
 
 @if($content['can_vote'])
     <hr>
-    <a class="button" href="{{ route('vote-view',
+    <a  class="button"
+        href="{{ route('vote-view',
         array('phase' => $content['discussion']->current_phase,
         'id' => $content['discussion']->id)) }}">
         Submit
@@ -124,8 +139,10 @@
 
 @if($content['can_reply'])
     <hr>
-    <a class="button" href="{{ route('resp-view',
-        array('id' => $content['discussion']->id)) }}">Submit Response
+    <a  class="button"
+        href="{{ route('resp-view',
+        array('id' => $content['discussion']->id)) }}">
+        Submit Response
     </a>
 @endif
 

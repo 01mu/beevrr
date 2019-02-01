@@ -1,6 +1,10 @@
 <?php
+/*
+ * beevrr
+ * github.com/01mu
+ */
 
-namespace beevrr\Http\Middleware\Mobile;
+namespace beevrr\Http\Middleware\Custom;
 
 use Closure;
 

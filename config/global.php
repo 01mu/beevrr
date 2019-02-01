@@ -6,4 +6,4 @@
 
 return [    'pagination' => 10,
             'an_hour' => 1, /* for debugging */
-            'use_https' => 1,];
+            'use_https' => getenv("USE_HTTPS"),];

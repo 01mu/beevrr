@@ -31,10 +31,8 @@ class ResponseModel extends Model
 
         Common::fix_time($responses, 1);
 
-        for($i = 0; $i < count($responses); $i++)
+        foreach($responses as $res)
         {
-            $res = $responses[$i];
-
             $res['liked'] = Response::get_like_text($res->id);
         }
 

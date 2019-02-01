@@ -61,5 +61,4 @@ class CheckCanRespond
 
         return $can_reply;
     }
-
 }

@@ -9,15 +9,18 @@
     @foreach($content['search'] as $search)
         <div class="box">
             <b>
-                <a href="{{ route('disc-view',
+                <a  href="{{ route('disc-view',
                     ['id' => $search->id]) }}">
-                    {{ $search->proposition }}</a>
-            </b><br>
+                    {{ $search->proposition }}
+                </a>
+            </b>
+            <br>
             <div class="small">
                 by
-                <a href="{{ route('user-view',
+                <a  href="{{ route('user-view',
                     ['id' => $search->user_id]) }}">
-                    {{ $search->user_name }}</a>
+                    {{ $search->user_name }}
+                </a>
                 {{ $search->post_date }}
                 | replies: {{ $search->reply_count }}
                 | votes: {{ $search->vote_count }}

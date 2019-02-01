@@ -7,8 +7,8 @@ hr
 
 body
 {
-    padding: 5px;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 13px;
     line-height: 1.6;
     background-color: #fefefe;
     font-family: Verdana, Geneva, sans-serif;
@@ -18,55 +18,6 @@ body
 {
     margin: 0 auto;
     max-width: 800px;
-}
-
-.top
-{
-    overflow: hidden;
-    padding: 10px;
-    padding-top: 20px;
-    border-style: solid;
-    border-color: #000000;
-    border-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-color: #99ccff;
-    border-bottom-width: 1px;
-    background-color: #66b3ff;
-}
-
-.title
-{
-    font-weight: bold;
-    background-color: #fbfbfb;
-    padding: 10px;
-}
-
-.titletext
-{
-    font-size: 20px;
-    text-align: left;
-}
-
-.btmbdr
-{
-    border-bottom-style: solid;
-    border-bottom-color: #000000;
-    border-bottom-width: 1px;
-}
-
-.box
-{
-    font-size: 13px;
-    background-color: #fbfbfb;
-    padding: 5px;
-    margin-bottom: 5px;
-}
-
-.header
-{
-    font-weight: bold;
-    background-color: #fbfbfb;
-    padding: 10px;
 }
 
 .right
@@ -168,13 +119,32 @@ hr
     position: absolute;
 }
 
-.boxarg
+.box, .boxarg
 {
     border-style: solid;
-    border-color: #b3b3b3;
     border-width: 1px;
     font-size: 13px;
     background-color: #fbfbfb;
     padding: 15px;
     margin-bottom: 5px;
+}
+
+.box
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-color: #ccc;
+}
+
+.boxarg
+{
+    border-color: #b3b3b3;
+}
+
+.argtitle
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

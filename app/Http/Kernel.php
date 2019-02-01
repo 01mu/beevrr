@@ -55,7 +55,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'setm' => \beevrr\Http\Middleware\Mobile\SetMobile::class,
+        'setm' => \beevrr\Http\Middleware\Custom\SetMobile::class,
         'resp' => \beevrr\Http\Middleware\Custom\CheckCanRespond::class,
         'user' => \beevrr\Http\Middleware\Custom\CheckUserExists::class,
         'vote' => \beevrr\Http\Middleware\Custom\CheckCanVote::class,

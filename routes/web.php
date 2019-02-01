@@ -145,12 +145,16 @@ Route::group(['middleware' => ['setm', 'log', 'resp-e',
    Route::get('mobile/resp_like/{id}', 'Response@resp_like');
 });
 
-Route::group(['middleware' => ['setm']], function ()
+Route::group(['middleware' => ['setm', 'disc']], function ()
 {
     Route::get('mobile/discussion_view/{id}', 'Discussion@disc_view');
+    Route::get('mobile/get_resp/{type}/{id}/p/{p}', 'Discussion@get_responses');
+});
+
+Route::group(['middleware' => ['setm']], function ()
+{
     Route::get('mobile/user_info/{id}/{option}/p/{p}', 'User@user_info');
     Route::get('mobile/home/p/{p}', 'Views@index');
-    Route::get('mobile/get_resp/{type}/{id}/p/{p}', 'Discussion@get_responses');
 });
 
 Route::group(['middleware' => ['throttle:3,20']], function ()

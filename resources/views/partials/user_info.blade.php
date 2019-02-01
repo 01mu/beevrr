@@ -8,10 +8,13 @@
 @if(count($content['activities']) > 0)
     @foreach($content['activities'] as $activity)
         <div class="box">
-            • {{ $activity['date'] }}:
-            {{ $activity['thing'] }}
-            <b><a href="{{ route('disc-view', array(
-                'id' => $activity['prop'],)) }}">{{ $activity['prop'] }}</a></b>
+            • {{ $activity['date'] }}: {{ $activity['thing'] }}
+            <b>
+                <a  href="{{ route('disc-view', array(
+                    'id' => $activity['prop'],)) }}">
+                    {{ $activity['prop'] }}
+                </a>
+            </b>
             {{ $activity['type'] }}
         </div>
     @endforeach

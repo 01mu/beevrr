@@ -20,7 +20,7 @@ class CheckDiscussionExists
         {
             if($request['mobile'])
             {
-                return response()->json(['status' => 'not_logged_in'], 200);
+                return response()->json(['status' => 'failure'], 200);
             }
             else
             {
